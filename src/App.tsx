@@ -1,6 +1,6 @@
-import Router from "./Router";
-import { createGlobalStyle } from "styled-components";
-import { ReactQueryDevtools } from "react-query/devtools";
+import { Helmet } from "react-helmet";
+import styled, { createGlobalStyle } from "styled-components";
+import ToDolist from "./Components/ToDoList";
 
 const GlobalStyle = createGlobalStyle`
 @import url('https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400&display=swap');
@@ -57,17 +57,25 @@ a{
 
 body{
   font-family: 'Source Sans Pro', sans-serif;
-  background-color: ${(props) => props.theme.bgColor};
-  color:${(props) => props.theme.textColor}
+  background-color: #232932;
+  color:black;
+  height: 78vh;
 }
 `;
 
 function App() {
   return (
     <>
-      <GlobalStyle />
-      <Router />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <Helmet>
+        <link
+          rel="stylesheet"
+          href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"
+          integrity="sha384-DyZ88mC6Up2uqS4h/KRgHuoeGwBcD4Ng9SiP4dIRy0EXTlnuz47vAwmeGwVChigm"
+          crossOrigin="anonymous"
+        ></link>
+      </Helmet>
+      <GlobalStyle></GlobalStyle>
+      <ToDolist />
     </>
   );
 }
