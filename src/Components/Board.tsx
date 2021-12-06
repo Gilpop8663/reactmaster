@@ -71,6 +71,10 @@ const Area = styled.div<IAreaProps>`
   padding: 20px;
 `;
 
+const Input = styled.input`
+  text-align: center;
+`;
+
 interface IBoardProps {
   toDos: IToDoProps[];
   boardId: string;
@@ -105,6 +109,12 @@ function Board({ toDos, boardId }: IBoardProps) {
     });
     setValue("toDo", "");
   };
+  const onFocusClick = (event: React.FocusEvent<HTMLInputElement>) => {
+    setTimeout(() => {
+      event.target.blur();
+    }, 3000);
+  };
+
   localStorage.setItem(USERTODOLIST_KEY, JSON.stringify(toDosa));
   //console.log(JSON.parse("asdf"));
   return (
@@ -117,7 +127,8 @@ function Board({ toDos, boardId }: IBoardProps) {
         </Button>
       </TitleDiv>
       <Form onSubmit={handleSubmit(onVaild)}>
-        <input
+        <Input
+          onFocus={onFocusClick}
           {...register("toDo", { required: true })}
           placeholder={`Add task a ${boardId}`}
           type="text"

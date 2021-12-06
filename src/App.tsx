@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { DragDropContext, Droppable, DropResult } from "react-beautiful-dnd";
 import { Helmet } from "react-helmet";
 import { useForm } from "react-hook-form";
@@ -14,15 +14,16 @@ const Wrapper = styled.div`
   max-width: 700px;
   width: 100%;
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
   height: 100vh;
   flex-wrap: wrap;
 `;
 
 const Boards = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: minmax(250px, 1fr);
+  place-content: center center;
   gap: 10px;
   width: 100%;
 `;
@@ -31,12 +32,17 @@ const Form = styled.form`
   max-width: 300px;
   display: flex;
   flex-direction: column;
-  background-color: black;
-  padding: 20px;
-  border-radius: 15px;
+  background-color: ${(props) => props.theme.boardColor};
+  padding: 20px 10px;
+  margin-left: 20px;
+  margin-top: 20px;
+  border-radius: 20px;
+  box-shadow: 2px 5px 5px rgba(0, 0, 0, 0.3);
 `;
 
-const Input = styled.input``;
+const Input = styled.input`
+  text-align: center;
+`;
 
 const Button = styled.button``;
 
@@ -91,14 +97,20 @@ function App() {
   }
 
   const onVaild = ({ board }: IAddBoard) => {
-    console.log(board);
+    //console.log(board);
     const newBoard = { [board]: [] };
-    console.log(newBoard);
+    //console.log(newBoard);
     setToDos((allBoards) => {
       return { ...allBoards, ...newBoard };
     });
-    console.log(localStorage.getItem(USERTODOLIST_KEY));
+    //console.log(localStorage.getItem(USERTODOLIST_KEY));
     setValue("board", "");
+  };
+
+  const onFocusClick = (event: React.FocusEvent<HTMLInputElement>) => {
+    setTimeout(() => {
+      event.target.blur();
+    }, 3000);
   };
   localStorage.setItem(USERTODOLIST_KEY, JSON.stringify(toDos));
   return (
@@ -111,10 +123,14 @@ function App() {
       </Helmet>
       <Form onSubmit={handleSubmit<IAddBoard>(onVaild)}>
         <Input
-          {...register("board", { required: true, maxLength: 20 })}
+          {...register("board", {
+            required: true,
+            maxLength: 20,
+          })}
           type="text"
           placeholder="Add a Board"
           maxLength={20}
+          onFocus={onFocusClick}
         />
         <Button>Add Board</Button>
       </Form>
