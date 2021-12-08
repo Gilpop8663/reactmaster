@@ -63,7 +63,7 @@ a{
 
 body{
   font-family: 'Source Sans Pro', sans-serif;
-  background-color: ${(props) => props.theme.bgColor};
+  background-color: ${(props) => props.theme.black};
   color: black;
 }
 `;
