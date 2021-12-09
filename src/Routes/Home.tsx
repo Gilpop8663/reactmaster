@@ -67,6 +67,19 @@ const Box = styled(motion.div)<{ bgPhoto: string }>`
   }
 `;
 
+const Info = styled(motion.div)`
+  padding: 10px;
+  background-color: ${(props) => props.theme.black.lighter};
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  opacity: 0;
+  h4 {
+    font-size: 14px;
+    text-align: center;
+  }
+`;
+
 const Overlay = styled(motion.div)`
   position: fixed;
   top: 0;
@@ -83,6 +96,34 @@ const BigMovie = styled(motion.div)`
   left: 0;
   right: 0;
   margin: 0 auto;
+  overflow: hidden;
+  border-radius: 15px;
+  background-color: ${(props) => props.theme.black.lighter};
+`;
+
+const BigCover = styled.div<{ bgPhoto: string }>`
+  width: 100%;
+  background-image: linear-gradient(to top, black, transparent),
+    url(${(props) => props.bgPhoto});
+  background-size: cover;
+  background-position: center center;
+  height: 400px;
+  border: none;
+`;
+
+const BigTitle = styled.h3`
+  color: ${(props) => props.theme.white.lighter};
+  padding: 20px;
+  font-size: 46px;
+  position: relative;
+  top: -80px;
+`;
+
+const BigOverview = styled.p`
+  color: ${(props) => props.theme.white.lighter};
+  padding: 20px;
+  position: relative;
+  top: -80px;
 `;
 
 const rowVariants: Variants = {
@@ -93,7 +134,18 @@ const rowVariants: Variants = {
 
 const boxVariants: Variants = {
   normal: { scale: 1 },
-  hover: { scale: 1.3, y: -50, transition: { delay: 0.5, type: "tween" } },
+  hover: {
+    scale: 1.3,
+    y: -50,
+    transition: { delay: 0.5, duration: 0.1, type: "tween" },
+  },
+};
+
+const infoVariants: Variants = {
+  hover: {
+    opacity: 1,
+    transition: { delay: 0.5, duration: 0.1, type: "tween" },
+  },
 };
 
 const offset = 6;
@@ -127,6 +179,10 @@ function Home() {
   const onOverlayClicked = () => {
     history.push("/");
   };
+  const clickedMovie =
+    bigMovieMatch?.params.movieId &&
+    data?.results.find((item) => item.id === +bigMovieMatch.params.movieId);
+  console.log(clickedMovie);
   //console.log(data, isLoading);
   return (
     <Wrapper>
@@ -164,7 +220,11 @@ function Home() {
                       transition={{ type: "tween" }}
                       bgPhoto={makeImageHelper(item.backdrop_path, "w500")}
                       key={item.id}
-                    ></Box>
+                    >
+                      <Info variants={infoVariants}>
+                        <h4>{item.title}</h4>
+                      </Info>
+                    </Box>
                   ))}
               </Row>
             </AnimatePresence>
@@ -181,7 +241,18 @@ function Home() {
                   style={{ top: scrollY.get() + 100 }}
                   layoutId={bigMovieMatch.params.movieId}
                 >
-                  hello
+                  {clickedMovie && (
+                    <>
+                      <BigCover
+                        bgPhoto={makeImageHelper(
+                          clickedMovie.backdrop_path,
+                          "w500"
+                        )}
+                      ></BigCover>
+                      <BigTitle>{clickedMovie.title}</BigTitle>
+                      <BigOverview>{clickedMovie.overview}</BigOverview>
+                    </>
+                  )}
                 </BigMovie>
               </>
             ) : null}

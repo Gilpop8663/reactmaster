@@ -5,7 +5,8 @@ import {
   Variants,
 } from "framer-motion";
 import { useEffect, useState } from "react";
-import { useRouteMatch } from "react-router";
+import { useForm } from "react-hook-form";
+import { useHistory, useRouteMatch } from "react-router";
 import { Link } from "react-router-dom";
 import styled from "styled-components";
 
@@ -69,7 +70,7 @@ const Item = styled.li`
   }
 `;
 
-const Search = styled.span`
+const Search = styled.form`
   color: white;
   position: relative;
   display: flex;
@@ -97,7 +98,13 @@ const LogoVariants: Variants = {
   active: { fillOpacity: [0, 1, 0], transition: { repeat: Infinity } },
 };
 
+interface IForm {
+  keyword: string;
+}
+
 function Header() {
+  const { register, handleSubmit } = useForm<IForm>();
+  const history = useHistory();
   const [openSearch, setOpenSearch] = useState(false);
   const homeMatch = useRouteMatch("/");
   const tvMatch = useRouteMatch("/tv");
@@ -116,6 +123,10 @@ function Header() {
       }
     });
   }, [scrollY, navAnimation]);
+  const onValid = (data: IForm) => {
+    console.log(data);
+    history.push(`/search?keyword=${data.keyword}`);
+  };
   return (
     <Nav initial={{ backgroundColor: "rgba(0,0,0,0)" }} animate={navAnimation}>
       <Col>
@@ -145,7 +156,7 @@ function Header() {
         </Items>
       </Col>
       <Col>
-        <Search>
+        <Search onSubmit={handleSubmit(onValid)}>
           <motion.svg
             onClick={toggleSearch}
             animate={{ x: openSearch ? -210 : 0 }}
@@ -161,6 +172,7 @@ function Header() {
             ></path>
           </motion.svg>
           <Input
+            {...register("keyword", { required: true, minLength: 2 })}
             placeholder="Search for movie or tv shows..."
             animate={{ scaleX: openSearch ? 1 : 0 }}
             transition={{ type: "linear" }}
