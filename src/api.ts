@@ -37,6 +37,12 @@ export function getMoviesPage1() {
 
 export function getMoviesPage2() {
   return fetch(
-    `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=2`
+    `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=3`
+  ).then((response) => response.json());
+}
+
+export function getMoviesPage3() {
+  return fetch(
+    `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=5`
   ).then((response) => response.json());
 }
