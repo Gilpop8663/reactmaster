@@ -1,9 +1,10 @@
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import React, { useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { IGetMoviesProps, IMovie } from "../api";
 import { makeImageHelper } from "../utils";
+import ClickMovie from "./ClickMovie";
 
 const Slider = styled.div`
   position: relative;
@@ -160,11 +161,12 @@ const ArrowVariants: Variants = {
 const offset = 6;
 
 interface INowProps {
-  nowMovieData: IMovie[];
+  movieData: IMovie[];
   page1?: IGetMoviesProps;
+  sliderTitle: string;
 }
 
-function NowMovies({ nowMovieData, page1 }: INowProps) {
+function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
   const history = useHistory();
 
   const [leaving, setLeaving] = useState(false);
@@ -179,7 +181,7 @@ function NowMovies({ nowMovieData, page1 }: INowProps) {
   const [back, setBack] = useState(false);
   const [hover, setHover] = useState(false);
   const [index, setIndex] = useState(0);
-  const totalMovies = nowMovieData.length - 1;
+  const totalMovies = movieData.length - 1;
   const maxIndex = Math.floor(totalMovies / offset) - 1;
   const decreaseIndex = () => {
     if (page1) {
@@ -203,131 +205,145 @@ function NowMovies({ nowMovieData, page1 }: INowProps) {
   const onBoxClicked = (movieId: number) => {
     history.push(`/movies/${movieId}`);
   };
-  console.log("로우 호버의 값: ", rowHover);
+  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
+  //console.log("로우 호버의 값: ", rowHover);
 
   return (
-    <Slider onMouseLeave={rowMouseEnterLeave} onMouseEnter={rowMouseEnterLeave}>
-      <AnimatePresence
-        onExitComplete={toggleLeaving}
-        initial={false}
-        custom={back}
+    <>
+      <Slider
+        onMouseLeave={rowMouseEnterLeave}
+        onMouseEnter={rowMouseEnterLeave}
       >
-        <ArchiveContainer>
-          <Archive>지금 뜨는 콘텐츠</Archive>
-          <IndexBoxs>
-            {rowHover &&
-              Array.from({ length: maxIndex + 1 }, (v, i) => i).map((item) => (
-                <IndexBox key={item} index={item === index}></IndexBox>
+        <AnimatePresence
+          onExitComplete={toggleLeaving}
+          initial={false}
+          custom={back}
+        >
+          <ArchiveContainer>
+            <Archive>{sliderTitle}</Archive>
+            <IndexBoxs>
+              {rowHover &&
+                Array.from({ length: maxIndex + 1 }, (v, i) => i).map(
+                  (item) => (
+                    <IndexBox key={item} index={item === index}></IndexBox>
+                  )
+                )}
+            </IndexBoxs>
+          </ArchiveContainer>
+          {hover && (
+            <ArrowBtn
+              key="leftBtn"
+              onClick={decreaseIndex}
+              variants={ArrowVariants}
+              initial="btnNormal"
+              animate="btnNormal"
+              exit="btnNormal"
+              transition={{ type: "tween", duration: 0.2 }}
+              whileHover="btnHover"
+            >
+              <motion.i key="leftI" className="fas fa-chevron-left"></motion.i>
+            </ArrowBtn>
+          )}
+          <Row
+            key={index}
+            custom={back}
+            isFirst={index}
+            hover={hover}
+            variants={rowVariants}
+            animate="visible"
+            initial="hidden"
+            exit="exit"
+            transition={{ type: "easy-in-out", duration: 0.5 }}
+          >
+            {hover === true ? (
+              <Box
+                key="prevBox"
+                variants={boxVariants}
+                initial={false}
+                transition={{ type: "tween", duration: 0.1 }}
+                bgPhoto={makeImageHelper(
+                  movieData
+                    ? index === 0
+                      ? movieData[
+                          Math.floor((movieData.length - 1) / 6) * offset
+                        ]?.backdrop_path
+                      : movieData[offset * index]?.backdrop_path
+                    : "",
+                  "w500"
+                )}
+              ></Box>
+            ) : null}
+            {movieData
+              .slice(1)
+              .slice(offset * index, offset * index + offset)
+              .map((item) => (
+                <Box
+                  layoutId={item.id + ""}
+                  onClick={() => onBoxClicked(item.id)}
+                  hover={hover}
+                  variants={boxVariants}
+                  initial="normal"
+                  whileHover="hover"
+                  transition={{ type: "tween", duration: 0.1 }}
+                  bgPhoto={makeImageHelper(
+                    item.backdrop_path ? item.backdrop_path : item.poster_path,
+                    "w500"
+                  )}
+                  key={item.id}
+                >
+                  <Info key="movieInfo" variants={infoVariants}>
+                    <h4 key="movieTitle">{item.title}</h4>
+                  </Info>
+                </Box>
               ))}
-          </IndexBoxs>
-        </ArchiveContainer>
-        {hover && (
+            {index !== maxIndex ? (
+              <Box
+                key="nextBox"
+                variants={boxVariants}
+                initial="normal"
+                layoutId={movieData[offset * index + offset + 1]?.id + ""}
+                transition={{ type: "tween", duration: 0.1 }}
+                bgPhoto={makeImageHelper(
+                  movieData
+                    ? movieData[offset * index + offset + 1]?.backdrop_path
+                    : "",
+                  "w500"
+                )}
+              ></Box>
+            ) : (
+              <Box
+                key="nextBox"
+                variants={boxVariants}
+                initial="normal"
+                layoutId={movieData[1].id + ""}
+                transition={{ type: "tween", duration: 0.1 }}
+                bgPhoto={makeImageHelper(
+                  movieData ? movieData[1]?.backdrop_path : "",
+                  "w500"
+                )}
+              ></Box>
+            )}
+          </Row>
+          (
           <ArrowBtn
-            key="leftBtn"
-            onClick={decreaseIndex}
+            key="rightBtn"
             variants={ArrowVariants}
             initial="btnNormal"
             animate="btnNormal"
             exit="btnNormal"
             transition={{ type: "tween", duration: 0.2 }}
             whileHover="btnHover"
+            onClick={increaseIndex}
           >
-            <motion.i key="leftI" className="fas fa-chevron-left"></motion.i>
+            <motion.i key="rightI" className="fas fa-chevron-right"></motion.i>
           </ArrowBtn>
-        )}
-        <Row
-          key={index}
-          custom={back}
-          isFirst={index}
-          hover={hover}
-          variants={rowVariants}
-          animate="visible"
-          initial="hidden"
-          exit="exit"
-          transition={{ type: "easy-in-out", duration: 0.5 }}
-        >
-          {hover === true ? (
-            <Box
-              key="prevBox"
-              variants={boxVariants}
-              initial={false}
-              transition={{ type: "tween", duration: 0.1 }}
-              bgPhoto={makeImageHelper(
-                nowMovieData
-                  ? index === 0
-                    ? nowMovieData[
-                        Math.floor((nowMovieData.length - 1) / 6) * offset
-                      ]?.backdrop_path
-                    : nowMovieData[offset * index]?.backdrop_path
-                  : "",
-                "w500"
-              )}
-            ></Box>
-          ) : null}
-          {nowMovieData
-            .slice(1)
-            .slice(offset * index, offset * index + offset)
-            .map((item) => (
-              <Box
-                layoutId={item.id + ""}
-                onClick={() => onBoxClicked(item.id)}
-                hover={hover}
-                variants={boxVariants}
-                initial="normal"
-                whileHover="hover"
-                transition={{ type: "tween", duration: 0.1 }}
-                bgPhoto={makeImageHelper(item.backdrop_path, "w500")}
-                key={item.id}
-              >
-                <Info key="movieInfo" variants={infoVariants}>
-                  <h4 key="movieTitle">{item.title}</h4>
-                </Info>
-              </Box>
-            ))}
-          {index !== Math.floor((nowMovieData.length - 1) / 6) - 1 ? (
-            <Box
-              key="nextBox"
-              variants={boxVariants}
-              initial="normal"
-              layoutId={nowMovieData[offset * index + offset + 1].id + ""}
-              transition={{ type: "tween", duration: 0.1 }}
-              bgPhoto={makeImageHelper(
-                nowMovieData
-                  ? nowMovieData[offset * index + offset + 1]?.backdrop_path
-                  : "",
-                "w500"
-              )}
-            ></Box>
-          ) : (
-            <Box
-              key="nextBox"
-              variants={boxVariants}
-              initial="normal"
-              layoutId={nowMovieData[1].id + ""}
-              transition={{ type: "tween", duration: 0.1 }}
-              bgPhoto={makeImageHelper(
-                nowMovieData ? nowMovieData[1]?.backdrop_path : "",
-                "w500"
-              )}
-            ></Box>
-          )}
-        </Row>
-        (
-        <ArrowBtn
-          key="rightBtn"
-          variants={ArrowVariants}
-          initial="btnNormal"
-          animate="btnNormal"
-          exit="btnNormal"
-          transition={{ type: "tween", duration: 0.2 }}
-          whileHover="btnHover"
-          onClick={increaseIndex}
-        >
-          <motion.i key="rightI" className="fas fa-chevron-right"></motion.i>
-        </ArrowBtn>
-        )
-      </AnimatePresence>
-    </Slider>
+          )
+        </AnimatePresence>
+      </Slider>
+      {bigMovieMatch ? (
+        <ClickMovie bigMovieMatch={bigMovieMatch} movieData={movieData} />
+      ) : null}
+    </>
   );
 }
 

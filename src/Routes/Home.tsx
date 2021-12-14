@@ -1,15 +1,22 @@
-import { useViewportScroll } from "framer-motion";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { useRouteMatch } from "react-router";
 import styled from "styled-components";
 import {
   getMoviesPage1,
   getMoviesPage2,
   getMoviesPage3,
+  getMoviesPage4,
+  getMoviesPage5,
+  getMoviesPage6,
   IGetMoviesProps,
   IMovie,
+  topRateMoviePage1,
+  topRateMoviePage2,
+  topRateMoviePage3,
+  topRateMoviePage4,
+  topRateMoviePage5,
+  topRateMoviePage6,
 } from "../api";
-import ClickMovie from "../Components/ClickMovie";
 import NowMovies from "../Components/NowMovies";
 import { makeImageHelper } from "../utils";
 
@@ -39,9 +46,16 @@ const Overview = styled.p`
   font-size: 34px;
   width: 50%;
 `;
+const Slider = styled.div`
+  margin-bottom: 70px;
+`;
 
 function Home() {
   const nowMovieData: IMovie[] = [];
+  const recommendData: IMovie[] = [];
+  const topRateMovies: IMovie[] = [];
+  const recommendData2: IMovie[] = [];
+  const [isLoading, setIsLoading] = useState(true);
   const nowPage1 = useQuery<IGetMoviesProps>(
     ["movies", "nowPlayingPage1"],
     getMoviesPage1
@@ -54,20 +68,74 @@ function Home() {
     ["movies", "nowPlayingPage3"],
     getMoviesPage3
   );
+  const nowPage4 = useQuery<IGetMoviesProps>(
+    ["movies", "nowPlayingPage4"],
+    getMoviesPage4
+  );
+  const nowPage5 = useQuery<IGetMoviesProps>(
+    ["movies", "nowPlayingPage5"],
+    getMoviesPage5
+  );
+  const nowPage6 = useQuery<IGetMoviesProps>(
+    ["movies", "nowPlayingPage6"],
+    getMoviesPage6
+  );
+
+  const topRatePage1 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage1"],
+    topRateMoviePage1
+  );
+
+  const topRatePage2 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage2"],
+    topRateMoviePage2
+  );
+
+  const topRatePage3 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage3"],
+    topRateMoviePage3
+  );
+
+  const topRatePage4 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage4"],
+    topRateMoviePage4
+  );
+
+  const topRatePage5 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage5"],
+    topRateMoviePage5
+  );
+
+  const topRatePage6 = useQuery<IGetMoviesProps>(
+    ["movies", "topRatePage6"],
+    topRateMoviePage6
+  );
+
   //console.log(nowPage1);
   nowPage1?.data?.results.map((item) => nowMovieData.push(item));
   nowPage2?.data?.results.map((item) => nowMovieData.push(item));
   nowPage3?.data?.results.map((item) => nowMovieData.push(item));
-  console.log(nowMovieData);
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
-  const { scrollY } = useViewportScroll();
 
+  nowPage4?.data?.results.map((item) => recommendData.push(item));
+  nowPage5?.data?.results.map((item) => recommendData.push(item));
+  nowPage6?.data?.results.map((item) => recommendData.push(item));
+
+  topRatePage1?.data?.results.map((item) => topRateMovies.push(item));
+  topRatePage2?.data?.results.map((item) => topRateMovies.push(item));
+  topRatePage3?.data?.results.map((item) => topRateMovies.push(item));
+
+  topRatePage4?.data?.results.map((item) => recommendData2.push(item));
+  topRatePage5?.data?.results.map((item) => recommendData2.push(item));
+  topRatePage6?.data?.results.map((item) => recommendData2.push(item));
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
   // console.log(clickedMovie);
   //console.log(index, "인뎃으");
   //console.log(nowMovieData, isLoading);
   return (
     <Wrapper>
-      {nowPage1.isLoading ? (
+      {isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -76,18 +144,45 @@ function Home() {
               nowPage1.data?.results[0]?.backdrop_path || ""
             )}
           >
-            <Title>{nowMovieData[0].title}</Title>
-            <Overview>{nowMovieData[0].overview}</Overview>
+            <Title>{nowPage1.data?.results[0].title}</Title>
+            <Overview>{nowPage1.data?.results[0].overview}</Overview>
           </Banner>
-          <NowMovies nowMovieData={nowMovieData} page1={nowPage1?.data} />
-
-          {bigMovieMatch ? (
-            <ClickMovie
-              bigMovieMatch={bigMovieMatch}
-              nowMovieData={nowMovieData}
-              scrollY={scrollY}
-            />
-          ) : null}
+          {nowMovieData && (
+            <Slider>
+              <NowMovies
+                movieData={nowMovieData}
+                page1={nowPage1?.data}
+                sliderTitle={"지금 뜨는 콘텐츠"}
+              />
+            </Slider>
+          )}
+          {topRateMovies && (
+            <Slider>
+              <NowMovies
+                movieData={topRateMovies}
+                page1={topRatePage1?.data}
+                sliderTitle={"님의 취향 저격 베스트 콘텐츠"}
+              />
+            </Slider>
+          )}
+          {recommendData && (
+            <Slider>
+              <NowMovies
+                movieData={recommendData}
+                page1={nowPage4?.data}
+                sliderTitle={"인기 있는 영화순위"}
+              />
+            </Slider>
+          )}
+          {recommendData2 && (
+            <Slider>
+              <NowMovies
+                movieData={recommendData2}
+                page1={topRatePage4?.data}
+                sliderTitle={"워워드 수상 해외영화"}
+              />
+            </Slider>
+          )}
         </>
       )}
     </Wrapper>

@@ -13,6 +13,7 @@ declare module "styled-components" {
     white: {
       darker: string;
       lighter: string;
+      veryDark: string;
     };
   }
 }
