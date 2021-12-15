@@ -341,7 +341,11 @@ function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
         </AnimatePresence>
       </Slider>
       {bigMovieMatch ? (
-        <ClickMovie bigMovieMatch={bigMovieMatch} movieData={movieData} />
+        <ClickMovie
+          key={index}
+          bigMovieMatch={bigMovieMatch}
+          movieData={movieData}
+        />
       ) : null}
     </>
   );

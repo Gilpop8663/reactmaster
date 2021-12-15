@@ -76,6 +76,22 @@ export interface IGetMovieDetail {
   title: string;
   vote_average: number;
   vote_count: number;
+  videos: {
+    results: [
+      {
+        id: string;
+        iso_639_1: string;
+        iso_3166_1: string;
+        key: string;
+        name: string;
+        official: boolean;
+        published_at: string;
+        site: string;
+        size: number;
+        type: string;
+      }
+    ];
+  };
 }
 
 export interface IMovieCredit {
@@ -196,7 +212,7 @@ export function getVideo(id: string) {
 
 export function getMovieDetail(id: string) {
   return fetch(
-    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US`
+    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos,images`
   ).then((response) => response.json());
 }
 
