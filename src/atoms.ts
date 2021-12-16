@@ -15,3 +15,8 @@ export const nowMovies = atom<IMovie[]>({
   key: "nowMovies",
   default: [],
 });
+
+export const nowPathName = atom({
+  key: "nowPath",
+  default: "/",
+});

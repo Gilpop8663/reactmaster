@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
 import {
   getMoviesPage1,
@@ -20,9 +21,7 @@ import {
 import NowMovies from "../Components/NowMovies";
 import { makeImageHelper } from "../utils";
 
-const Wrapper = styled.div`
-  background-color: black;
-`;
+const Wrapper = styled.div``;
 
 const Banner = styled.div<{ isBack: string }>`
   background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
@@ -133,6 +132,9 @@ function Home() {
   // console.log(clickedMovie);
   //console.log(index, "인뎃으");
   //console.log(nowMovieData, isLoading);
+
+  const location = useLocation();
+
   return (
     <Wrapper>
       {isLoading ? (
@@ -151,6 +153,7 @@ function Home() {
             <Slider>
               <NowMovies
                 movieData={nowMovieData}
+                search={location.search ? location.search : ""}
                 page1={nowPage1?.data}
                 sliderTitle={"지금 뜨는 콘텐츠"}
               />
@@ -160,6 +163,7 @@ function Home() {
             <Slider>
               <NowMovies
                 movieData={topRateMovies}
+                search={location.search ? location.search : ""}
                 page1={topRatePage1?.data}
                 sliderTitle={"님의 취향 저격 베스트 콘텐츠"}
               />
@@ -169,6 +173,7 @@ function Home() {
             <Slider>
               <NowMovies
                 movieData={recommendData}
+                search={location.search ? location.search : ""}
                 page1={nowPage4?.data}
                 sliderTitle={"인기 있는 영화순위"}
               />
@@ -178,6 +183,7 @@ function Home() {
             <Slider>
               <NowMovies
                 movieData={recommendData2}
+                search={location.search ? location.search : ""}
                 page1={topRatePage4?.data}
                 sliderTitle={"워워드 수상 해외영화"}
               />

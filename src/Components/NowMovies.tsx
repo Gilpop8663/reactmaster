@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, Variants } from "framer-motion";
 import React, { useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import { IGetMoviesProps, IMovie } from "../api";
 import { makeImageHelper } from "../utils";
@@ -30,7 +30,12 @@ const Box = styled(motion.div)<{ hover?: boolean; bgPhoto: string }>`
   background-color: white;
   height: 180px;
   font-size: 66px;
-  background-image: url(${(props) => props.bgPhoto});
+  background-image: ${(props) =>
+    props.bgPhoto === `https://image.tmdb.org/t/p/w500/`
+      ? `url(
+          "https://lh3.googleusercontent.com/proxy/iMS9Htm7Nxk5phLAi9872VBCPpw7CyJLhjYtyoG0K8pMfgEYi4aSkWo8l7_pz7pq-KkF_-_pvhPxurMR4RN6kOg"
+        )`
+      : `url(${props.bgPhoto})`};
   background-position: center center;
   background-size: cover;
   cursor: pointer;
@@ -164,11 +169,13 @@ interface INowProps {
   movieData: IMovie[];
   page1?: IGetMoviesProps;
   sliderTitle: string;
+  search?: string;
 }
 
-function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
+function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
   const history = useHistory();
-
+  const location = useLocation();
+  //console.log(pathName);
   const [leaving, setLeaving] = useState(false);
   const [rowHover, setRowHover] = useState(false);
   const rowMouseEnterLeave = () => {
@@ -177,7 +184,6 @@ function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
   const toggleLeaving = () => {
     setLeaving((prev) => !prev);
   };
-
   const [back, setBack] = useState(false);
   const [hover, setHover] = useState(false);
   const [index, setIndex] = useState(0);
@@ -202,26 +208,37 @@ function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
       setIndex((prev) => (index === maxIndex ? 0 : prev + 1));
     }
   };
+  const keyword = new URLSearchParams(location.search).get("keyword");
   const onBoxClicked = (movieId: number) => {
-    history.push(`/movies/${movieId}`);
+    if (!search) {
+      history.push(`/movies/${movieId}`);
+    } else if (search) {
+      history.push(`/search?keyword=${keyword}&movies=${movieId}`);
+    }
   };
-  const bigMovieMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
+  const bigMovieMatch = useRouteMatch<{ movieId?: string }>(
+    !search ? `/movies/:movieId` : `/search`
+  );
+  console.log("빅매치임", bigMovieMatch);
+  //console.log(bigMovieMatch);
   //console.log("로우 호버의 값: ", rowHover);
 
   return (
     <>
       <Slider
+        key={index + 324}
         onMouseLeave={rowMouseEnterLeave}
         onMouseEnter={rowMouseEnterLeave}
       >
         <AnimatePresence
           onExitComplete={toggleLeaving}
           initial={false}
+          key={index + 82312}
           custom={back}
         >
-          <ArchiveContainer>
-            <Archive>{sliderTitle}</Archive>
-            <IndexBoxs>
+          <ArchiveContainer key={index + 8678}>
+            <Archive key={sliderTitle + "cvxbfg"}>{sliderTitle}</Archive>
+            <IndexBoxs key={index + 7787}>
               {rowHover &&
                 Array.from({ length: maxIndex + 1 }, (v, i) => i).map(
                   (item) => (
@@ -286,7 +303,11 @@ function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
                   whileHover="hover"
                   transition={{ type: "tween", duration: 0.1 }}
                   bgPhoto={makeImageHelper(
-                    item.backdrop_path ? item.backdrop_path : item.poster_path,
+                    item.backdrop_path
+                      ? item.backdrop_path
+                      : item.poster_path
+                      ? item.poster_path
+                      : "",
                     "w500"
                   )}
                   key={item.id}
@@ -342,9 +363,10 @@ function NowMovies({ movieData, page1, sliderTitle }: INowProps) {
       </Slider>
       {bigMovieMatch ? (
         <ClickMovie
-          key={index}
+          key={"xvcmds"}
           bigMovieMatch={bigMovieMatch}
           movieData={movieData}
+          search={search}
         />
       ) : null}
     </>

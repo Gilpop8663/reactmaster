@@ -6,15 +6,13 @@ import {
 } from "framer-motion";
 import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import {
   getMovieCredit,
   getMovieDetail,
   getSimilarMovie,
-  getVideo,
   IGetMovieDetail,
-  IGetVideoProps,
   IMovie,
   IMovieCredit,
   ISimilarMovie,
@@ -241,29 +239,26 @@ const MoreTitle = styled.span`
 `;
 
 interface IClickMovie {
-  bigMovieMatch: { params: { movieId: string } };
+  bigMovieMatch?: { params?: { movieId?: string } };
   movieData: IMovie[];
-  moreMovie?: number;
+  search?: string | "";
 }
 
 const opacityV: Variants = {
   normal: {
     opacity: 1,
-    x: 0,
   },
   entry: {
-    opacity: 1,
-    x: -1000,
+    opacity: 0,
   },
   exit: {
     opacity: 0,
-    x: 1000,
   },
 };
 
-function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
+function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
   //console.log("빅무비매치임 :", bigMovieMatch, "무비데이터임:", movieData);
-  //console.log(movieData, bigMovieMatch?.params.movieId);
+  //console.log(movieData, isSearch);
   //console.log(moreMovie);
   // useEffect(() => {}, [bigMovieMatch?.params.movieId]);
   //console.log(similarData.data?.results[0].id);
@@ -273,12 +268,28 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
   useEffect(() => {
     setClicked(false);
   }, [clicked]);
+  // console.log(history);
+  const location = useLocation();
+  const newId: string = new URLSearchParams(location.search).get("movies")
+    ? String(new URLSearchParams(location.search).get("movies"))
+    : "";
 
-  // console.log(detailData.data?);
-
+  const isSearch = bigMovieMatch?.params?.movieId
+    ? bigMovieMatch?.params.movieId
+    : newId;
+  //console.log(isSearch);
+  const keyword = new URLSearchParams(location.search).get("keyword");
+  const backUrl = `${location.pathname}?keyword=${keyword}`;
+  //console.log(location.pathname);
+  //  console.log(backUrl);
   const onOverlayClicked = () => {
     setOver(false);
-    history.push("/");
+    if (!search) {
+      history.push("/");
+    } else {
+      history.push(`${backUrl}`);
+    }
+    //history.push(location);
   };
   //console.log(clicked);
   const [over, setOver] = useState(false);
@@ -286,15 +297,17 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
   //   getVideo(bigMovieMatch?.params.movieId)
   // );
   const detailData = useQuery<IGetMovieDetail>(["movies", "detail"], () =>
-    getMovieDetail(bigMovieMatch?.params.movieId)
+    getMovieDetail(isSearch)
   );
   const creditData = useQuery<IMovieCredit>(["movies", "credit"], () =>
-    getMovieCredit(bigMovieMatch?.params.movieId)
+    getMovieCredit(isSearch)
   );
   //console.log(creditData.data?.cast[0].name);
   const similarData = useQuery<ISimilarMovie>(["movies", "similar"], () =>
-    getSimilarMovie(bigMovieMatch?.params.movieId)
+    getSimilarMovie(isSearch)
   );
+
+  console.log(isSearch, detailData.data);
   //console.log(similarData.data?.results[0].id);
   // const clickedMovie =
   //   bigMovieMatch.params.movieId &&
@@ -305,13 +318,17 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
   //       );
 
   const clickedMovie =
-    bigMovieMatch.params.movieId &&
-    movieData.find((item) => item.id === +bigMovieMatch.params.movieId);
+    isSearch &&
+    (movieData.find((item) => item.id === +isSearch)
+      ? movieData.find((item) => item.id === +isSearch)
+      : detailData.data);
 
   const mouseEnter = (event: any) => {
     setOver(true);
   };
-  const similarMatch = useRouteMatch<{ movieId: string }>("/movies/:movieId");
+  const similarMatch = useRouteMatch<{ movieId: string }>(
+    !search ? `/movies/:movieId` : `/search`
+  );
   //console.log(data, isLoading);
   //console.log(detailData.data);
   //console.log(similarData.data?.results[0]);
@@ -319,11 +336,18 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
   const onBoxClicked = (movieId: number) => {
     setOver(false);
     setClicked(true);
-    history.push(`/movies/${movieId}`);
+    if (!search) {
+      history.push(`/movies/${movieId}`);
+    } else if (search) {
+      history.push(
+        `${location.pathname}?$keyword=${keyword}&movies=${movieId}`
+      );
+    }
   };
   //console.log(moreMovie);
   //console.log(clickedMovie?.poster_path);
   // console.log(clickedMovie);
+  // console.log("무비ㅏ아이디임", movieId);
   // console.log(
   //   "시밀러 데이터 :",
   //   similarData.data?.results,
@@ -332,27 +356,27 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
   //   "시밀러맷치",
   //   similarMatch
   // );
-  console.log(detailData.data);
+  // console.log(detailData.data);
   return (
-    <AnimatePresence key={bigMovieMatch.params.movieId}>
-      {detailData.data && (
+    <AnimatePresence key={isSearch + "cxv"}>
+      {clickedMovie && (
         <Overlay
-          key={detailData.data?.vote_average}
+          key={clickedMovie.vote_average + "4vc5"}
           onClick={onOverlayClicked}
-          // exit={{opacity:0,zIndex:0}}
-          // animate={{ opacity: 1, zIndex: 2 }}
+          exit={{ opacity: 0, zIndex: 0 }}
+          animate={{ opacity: 1, zIndex: 2 }}
         ></Overlay>
       )}
-      {detailData.data && (
+      {clickedMovie && (
         <BigMovie
           variants={opacityV}
           initial="entry"
           animate="normal"
           exit="exit"
-          transition={{ duration: 0.1 }}
-          key={detailData.data?.original_title}
+          transition={{ delay: 0.3, duration: 0.5, type: "tween" }}
+          key={clickedMovie.original_title + "ERyt"}
           style={{ top: scrollY.get() + 100, zIndex: 4 }}
-          layoutId={bigMovieMatch.params.movieId}
+          layoutId={isSearch}
         >
           <>
             {detailData.data?.videos?.results[0] ? (
@@ -364,35 +388,37 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
                     : ""
                 }
                 allow="autoplay"
-                key={detailData.data?.videos.results[0].key}
+                key={detailData.data?.videos.results[0].key + "CVncn"}
                 frameBorder={0}
                 userWidth={window.innerWidth}
                 bgPhoto={makeImageHelper(
-                  detailData.data?.backdrop_path
-                    ? detailData.data?.backdrop_path
-                    : detailData.data?.poster_path
+                  clickedMovie.backdrop_path
+                    ? clickedMovie.backdrop_path
+                    : clickedMovie.poster_path
+                    ? clickedMovie.poster_path
+                    : ""
                 )}
               ></BigCover>
             ) : (
               <BigCover
-                key={detailData.data?.poster_path}
+                key={clickedMovie.poster_path}
                 userWidth={window.innerWidth}
                 bgPhoto={makeImageHelper(
-                  detailData.data?.backdrop_path
-                    ? detailData.data?.backdrop_path
-                    : detailData.data?.poster_path
+                  clickedMovie.backdrop_path
+                    ? clickedMovie.backdrop_path
+                    : clickedMovie.poster_path
+                    ? clickedMovie.poster_path
+                    : ""
                 )}
               ></BigCover>
             )}
             <DisableCover
-              key={detailData.data?.release_date}
+              key={clickedMovie.release_date + "xc7aqw"}
               isOver={over}
             ></DisableCover>
             <BigContainer>
-              <BigTitle key={detailData.data?.title}>
-                {detailData.data?.title}
-              </BigTitle>
-              <UserBox key={detailData.data?.popularity}>
+              <BigTitle key={clickedMovie.title}>{clickedMovie.title}</BigTitle>
+              <UserBox key={clickedMovie.popularity + "xc7"}>
                 <Playbox>
                   <i className="fas fa-play"></i>
                   <span>재생</span>
@@ -407,27 +433,30 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
                   <i className="far fa-thumbs-down"></i>
                 </PlayCircle>
               </UserBox>
-              <DetailGrid key={detailData.data?.runtime}>
-                <DetailBox key={detailData.data?.release_date}>
+              <DetailGrid key={detailData.data?.runtime + "zas74"}>
+                <DetailBox key={detailData.data?.release_date + "x54s"}>
                   <InfoBox>
-                    <MoiveAverage key={detailData.data?.vote_count}>
-                      {detailData.data?.vote_average
-                        ? `${(detailData.data?.vote_average * 10).toFixed(
-                            0
-                          )}% 일치`
+                    <MoiveAverage key={clickedMovie.vote_count + "as57s"}>
+                      {clickedMovie.vote_average
+                        ? `${(clickedMovie.vote_average * 10).toFixed(0)}% 일치`
                         : ""}
                     </MoiveAverage>
-                    <MovieInfoTop key={detailData.data?.release_date}>
-                      {detailData.data?.release_date.slice(0, 4)}년
+                    <MovieInfoTop key={clickedMovie.release_date + "14a778a"}>
+                      {clickedMovie.release_date
+                        ? clickedMovie.release_date.slice(0, 4)
+                        : clickedMovie.release_date}
+                      년
                     </MovieInfoTop>
-                    <MovieInfoTop key={detailData.data?.runtime}>
+                    <MovieInfoTop key={detailData.data?.runtime + "1234"}>
                       {detailData.data?.runtime === 0
-                        ? ``
+                        ? ""
+                        : detailData.data?.runtime === null
+                        ? ""
                         : `${detailData.data?.runtime}분`}
                     </MovieInfoTop>
                   </InfoBox>
-                  <BigOverview key={detailData.data?.overview}>
-                    {detailData.data?.overview}
+                  <BigOverview key={clickedMovie.overview}>
+                    {clickedMovie.overview}
                   </BigOverview>
                 </DetailBox>
                 {detailData.data?.genres &&
@@ -443,133 +472,123 @@ function ClickMovie({ bigMovieMatch, movieData, moreMovie }: IClickMovie) {
 
                       <InfoBox>
                         <InfoSpan>출연진:</InfoSpan>
-                        <MovieInfo key={detailData.data?.id}>
+                        <MovieInfo key={clickedMovie.overview}>
                           {creditData.data?.cast[0]
-                            ? creditData.data?.cast[0].name
+                            ? `${creditData.data?.cast[0].name},`
                             : ""}
-                          ,
                         </MovieInfo>
-                        <MovieInfo key={detailData.data?.imdb_id}>
+                        <MovieInfo key={clickedMovie.id + "zxc54a"}>
                           {creditData.data?.cast[1]
-                            ? creditData.data?.cast[1].name
+                            ? `${creditData.data?.cast[1].name},`
                             : ""}
-                          ,
                         </MovieInfo>
-                        <MovieInfo key={detailData.data?.original_title}>
+                        <MovieInfo key={clickedMovie.original_title + "Sdf8"}>
                           {creditData.data?.cast[2]
-                            ? creditData.data?.cast[2].name
+                            ? `${creditData.data?.cast[2].name}`
                             : ""}
                         </MovieInfo>
                       </InfoBox>
                       <InfoBox>
                         <InfoSpan>크리에이터:</InfoSpan>
-                        <MovieInfo key={detailData.data?.overview}>
+                        <MovieInfo key={clickedMovie.overview + "Fxc74"}>
                           {creditData.data?.crew[0]
-                            ? creditData.data?.crew[0].name
+                            ? `${creditData.data?.crew[0].name},`
                             : ""}
-                          ,
                         </MovieInfo>
-                        <MovieInfo key={detailData.data?.popularity}>
+                        <MovieInfo key={clickedMovie.popularity + "ewg4"}>
                           {creditData.data?.crew[1]
-                            ? creditData.data?.crew[1].name
+                            ? `${creditData.data?.crew[1].name},`
                             : ""}
-                          ,
                         </MovieInfo>
-                        <MovieInfo key={detailData.data?.poster_path}>
+                        <MovieInfo key={clickedMovie.poster_path}>
                           {creditData.data?.crew[2]
-                            ? creditData.data?.crew[2].name
+                            ? `${creditData.data?.crew[2].name}`
                             : ""}
                         </MovieInfo>
                       </InfoBox>
                     </DetailBox>
                   )}
               </DetailGrid>
-              <MoreBox key={similarData.data?.results[5].genre_ids[0]}>
-                {similarData.data &&
-                  (moreMovie ? moreMovie < 2 : true) &&
-                  Array.from({ length: 9 }, (v, i) => i).map((item) => (
-                    <MoreMovie
-                      key={similarData.data?.results[item].id}
-                      onClick={() =>
-                        onBoxClicked(
-                          similarData?.data
-                            ? similarData?.data?.results[item].id
-                            : 0
-                        )
-                      }
-                    >
-                      {similarMatch && similarData.data?.results && (
-                        <MoreCover
-                          key={similarData.data?.results[item].original_title}
-                          bgPhoto={makeImageHelper(
-                            similarData.data?.results[item]?.backdrop_path
-                              ? similarData.data?.results[item]?.backdrop_path
-                              : similarData.data.results[item].poster_path
-                          )}
-                        ></MoreCover>
-                      )}
-                      <MoreInfoBox
-                        key={similarData.data?.results[item].overview}
+              {similarData?.data?.results && (
+                <MoreBox key={detailData.data?.imdb_id + "bcv7"}>
+                  {similarData.data?.results[9] &&
+                    Array.from({ length: 9 }, (v, i) => i).map((item) => (
+                      <MoreMovie
+                        key={similarData.data?.results[item].id}
+                        onClick={() =>
+                          onBoxClicked(
+                            similarData?.data
+                              ? similarData?.data?.results[item].id
+                              : 0
+                          )
+                        }
                       >
-                        <MoreTitle
-                          key={similarData.data?.results[item].popularity}
-                        >
-                          {similarData.data?.results[item].title}
-                        </MoreTitle>
-                        <MoiveAverage
-                          key={similarData.data?.results[item].genre_ids[0]}
-                        >
-                          {similarData.data?.results[item].vote_average
-                            ? `${(
-                                similarData.data?.results[item].vote_average *
-                                10
-                              ).toFixed(0)}%일치`
-                            : ""}
-                        </MoiveAverage>
-                        <MoreInfo
-                          key={similarData.data?.results[item].poster_path}
-                        >
-                          {similarData.data?.results[item].release_date.slice(
-                            0,
-                            4
-                          )}
-                        </MoreInfo>
-                        {similarData.data?.results[item].overview && (
-                          <MoreInfo
-                            key={similarData.data?.results[item].release_date}
-                          >
-                            {similarData.data?.results[item].overview.length >
-                            200
-                              ? `${similarData.data?.results[
-                                  item
-                                ].overview.slice(0, 200)}...`
-                              : similarData.data?.results[item].overview}
-                          </MoreInfo>
+                        {similarMatch && similarData.data?.results && (
+                          <MoreCover
+                            key={similarData.data?.results[item].original_title}
+                            bgPhoto={makeImageHelper(
+                              similarData.data?.results[item]?.backdrop_path
+                                ? similarData.data?.results[item]?.backdrop_path
+                                : similarData.data.results[item].poster_path
+                            )}
+                          ></MoreCover>
                         )}
-                      </MoreInfoBox>
-                    </MoreMovie>
-                  ))}
-              </MoreBox>
-              <MoreMovie
-                key={similarData.data?.results[0].id}
-                onClick={() =>
-                  onBoxClicked(
-                    similarData?.data ? similarData?.data?.results[0].id : 0
-                  )
-                }
-              >
-                dasdasdsa
-              </MoreMovie>
+                        <MoreInfoBox
+                          key={similarData.data?.results[item].overview}
+                        >
+                          <MoreTitle
+                            key={similarData.data?.results[item].title}
+                          >
+                            {similarData.data?.results[item].title}
+                          </MoreTitle>
+                          <MoiveAverage
+                            key={similarData.data?.results[item].genre_ids[0]}
+                          >
+                            {similarData.data?.results[item].vote_average
+                              ? `${(
+                                  similarData.data?.results[item].vote_average *
+                                  10
+                                ).toFixed(0)}%일치`
+                              : ""}
+                          </MoiveAverage>
+                          <MoreInfo
+                            key={similarData.data?.results[item].poster_path}
+                          >
+                            {similarData.data?.results[item].release_date.slice(
+                              0,
+                              4
+                            )}
+                          </MoreInfo>
+                          {similarData.data?.results[item].overview && (
+                            <MoreInfo
+                              key={
+                                similarData.data?.results[item].release_date +
+                                "cbbike"
+                              }
+                            >
+                              {similarData.data?.results[item].overview.length >
+                              200
+                                ? `${similarData.data?.results[
+                                    item
+                                  ].overview.slice(0, 200)}...`
+                                : similarData.data?.results[item].overview}
+                            </MoreInfo>
+                          )}
+                        </MoreInfoBox>
+                      </MoreMovie>
+                    ))}
+                </MoreBox>
+              )}
             </BigContainer>
           </>
         </BigMovie>
       )}
       {similarData.data?.results && clicked && similarMatch ? (
         <ClickMovie
-          key={similarData.data.results[0].id}
+          key={similarData.data.results[0].id + "RGd"}
           bigMovieMatch={similarMatch}
           movieData={similarData.data?.results}
-          moreMovie={moreMovie ? moreMovie + 1 : 1}
+          search={search}
         />
       ) : null}
       )

@@ -64,7 +64,7 @@ a{
 
 body{
   font-family: 'Source Sans Pro', sans-serif;
-  background-color: ${(props) => props.theme.black.veryDark};
+  background-color: black;
   color: ${(props) => props.theme.white.darker};
 }
 `;

@@ -124,7 +124,7 @@ function Header() {
     });
   }, [scrollY, navAnimation]);
   const onValid = (data: IForm) => {
-    console.log(data);
+    //console.log(data);
     history.push(`/search?keyword=${data.keyword}`);
   };
   return (
