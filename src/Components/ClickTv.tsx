@@ -12,9 +12,11 @@ import {
   getMovieCredit,
   getMovieDetail,
   getSimilarMovie,
+  getTvSimilar,
   IGetMovieDetail,
   IMovie,
   IMovieCredit,
+  IOnAirData,
   ISimilarMovie,
 } from "../api";
 import { makeImageHelper } from "../utils";
@@ -256,7 +258,7 @@ const opacityV: Variants = {
   },
 };
 
-function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
+function ClickTv({ bigMovieMatch, movieData, search }: IClickMovie) {
   //console.log("빅무비매치임 :", bigMovieMatch, "무비데이터임:", movieData);
   //console.log(movieData, isSearch);
   //console.log(moreMovie);
@@ -303,11 +305,11 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
     getMovieCredit(isSearch)
   );
   //console.log(creditData.data?.cast[0].name);
-  const similarData = useQuery<ISimilarMovie>(["movies", "similar"], () =>
-    getSimilarMovie(isSearch)
+  const similarData = useQuery<IOnAirData>(["tv", "similar"], () =>
+    getTvSimilar(isSearch)
   );
 
-  console.log(isSearch, detailData.data);
+  console.log(similarData);
   //console.log(similarData.data?.results[0].id);
   // const clickedMovie =
   //   bigMovieMatch.params.movieId &&
@@ -556,12 +558,12 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                           >
                             {similarData.data?.results[
                               item
-                            ]..slice(0, 4)}
+                            ].first_air_date.slice(0, 4)}
                           </MoreInfo>
                           {similarData.data?.results[item].overview && (
                             <MoreInfo
                               key={
-                                similarData.data?.results[item].release_date +
+                                similarData.data?.results[item].first_air_date +
                                 "cbbike"
                               }
                             >
@@ -583,7 +585,7 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
         </BigMovie>
       )}
       {similarData.data?.results && clicked && similarMatch ? (
-        <ClickMovie
+        <ClickTv
           key={similarData.data.results[0].id + "RGd"}
           bigMovieMatch={similarMatch}
           movieData={similarData.data?.results}
@@ -595,4 +597,4 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
   );
 }
 
-export default ClickMovie;
+export default ClickTv;
