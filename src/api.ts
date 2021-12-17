@@ -2,24 +2,24 @@ const API_KEY = "8ada0ba81365b222c17dc83dc8b3e61d";
 const BASE_URL = "https://api.themoviedb.org/3";
 
 export interface IMovie {
-  adult: boolean;
+  adult?: boolean;
   backdrop_path: string;
   genre_ids: number[];
   id: number;
   original_language: string;
-  original_title: string;
+  original_title?: string;
   overview: string;
   popularity: number;
   poster_path: string;
-  release_date: string;
-  title: string;
-  video: boolean;
+  release_date?: string;
+  title?: string;
+  video?: boolean;
   vote_average: number;
   vote_count: number;
 }
 
 export interface IGetMoviesProps {
-  dates: {
+  dates?: {
     maximum: string;
     minimum: string;
   };
@@ -136,6 +136,36 @@ export interface ISimilarMovie {
   total_results: number;
 }
 
+export interface ISearchMovie {
+  page: number;
+  results: IMovie[];
+  total_pages: number;
+  total_results: number;
+}
+
+export interface IOnAir {
+  backdrop_path: string;
+  first_air_date: string;
+  genre_ids: number[];
+  id: number;
+  name: string;
+  origin_country: string[];
+  original_language: string;
+  original_name: string;
+  overview: string;
+  popularity: number;
+  poster_path: string;
+  vote_average: number;
+  vote_count: number;
+}
+
+export interface IOnAirData {
+  page: number;
+  results: IOnAir[];
+  total_pages: number;
+  total_results: number;
+}
+
 export function getMoviesPage1() {
   return fetch(
     `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`
@@ -225,5 +255,36 @@ export function getMovieCredit(id: string) {
 export function getSimilarMovie(id: string) {
   return fetch(
     `${BASE_URL}/movie/${id}/similar?api_key=${API_KEY}&language=en-US&page=1`
+  ).then((response) => response.json());
+}
+
+export function getSearchMovie(id: string) {
+  return fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}`).then(
+    (response) => response.json()
+  );
+}
+
+export function getSearchMovie2(id: string) {
+  return fetch(
+    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=2`
+  ).then((response) => response.json());
+}
+
+export function getSearchMovie3(id: string) {
+  return fetch(
+    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=3`
+  ).then((response) => response.json());
+}
+
+export function getTvOnAir() {
+  return fetch(
+    `${BASE_URL}/tv/on_the_air?api_key=${API_KEY}&language=en-US&page=1`
+  ).then((response) => response.json());
+}
+
+export function getTvSimilar(id: string) {
+  return fetch(
+    `
+    ${BASE_URL}/tv/${id}/similar?api_key=${API_KEY}}&language=en-US&page=1`
   ).then((response) => response.json());
 }

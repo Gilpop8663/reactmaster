@@ -5,6 +5,7 @@ import styled from "styled-components";
 import { IGetMoviesProps, IMovie } from "../api";
 import { makeImageHelper } from "../utils";
 import ClickMovie from "./ClickMovie";
+import ClickTv from "./ClickTv";
 
 const Slider = styled.div`
   position: relative;
@@ -172,7 +173,7 @@ interface INowProps {
   search?: string;
 }
 
-function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
+function TvSlider({ movieData, page1, sliderTitle, search }: INowProps) {
   const history = useHistory();
   const location = useLocation();
   //console.log(pathName);
@@ -219,7 +220,7 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
   const bigMovieMatch = useRouteMatch<{ movieId?: string }>(
     !search ? `/movies/:movieId` : `/search`
   );
-  console.log("빅매치임", bigMovieMatch);
+  //console.log("빅매치임", bigMovieMatch);
   //console.log(bigMovieMatch);
   //console.log("로우 호버의 값: ", rowHover);
 
@@ -361,16 +362,9 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
           )
         </AnimatePresence>
       </Slider>
-      {bigMovieMatch ? (
-        <ClickMovie
-          key={"xvcmds"}
-          bigMovieMatch={bigMovieMatch}
-          movieData={movieData}
-          search={search}
-        />
-      ) : null}
+      {bigMovieMatch ? <ClickTv /> : null}
     </>
   );
 }
 
-export default React.memo(NowMovies);
+export default React.memo(TvSlider);
