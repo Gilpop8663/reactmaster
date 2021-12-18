@@ -9,13 +9,13 @@ import { useQuery } from "react-query";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
 import {
-  getMovieCredit,
-  getMovieDetail,
-  getSimilarMovie,
-  IGetMovieDetail,
+  getSimilarData,
+  getVideoCredit,
+  getVideoDetail,
+  IGetVideoDetail,
   IMovie,
-  IMovieCredit,
-  ISimilarMovie,
+  ISimilarProps,
+  IVideoCredit,
 } from "../api";
 import { makeImageHelper } from "../utils";
 
@@ -239,9 +239,10 @@ const MoreTitle = styled.span`
 `;
 
 interface IClickMovie {
-  bigMovieMatch?: { params?: { movieId?: string } };
-  movieData: IMovie[];
-  search?: string | "";
+  bigVideoMatch: { params?: { movieId?: string; tvId?: string } };
+  videoData: IMovie[];
+  isWhat: string;
+  search?: string;
 }
 
 const opacityV: Variants = {
@@ -256,27 +257,42 @@ const opacityV: Variants = {
   },
 };
 
-function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
-  //console.log("빅무비매치임 :", bigMovieMatch, "무비데이터임:", movieData);
-  //console.log(movieData, isSearch);
-  //console.log(moreMovie);
-  // useEffect(() => {}, [bigMovieMatch?.params.movieId]);
-  //console.log(similarData.data?.results[0].id);
+function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
   const history = useHistory();
   const { scrollY } = useViewportScroll();
+  const [over, setOver] = useState(false);
   const [clicked, setClicked] = useState(false);
   useEffect(() => {
     setClicked(false);
   }, [clicked]);
   // console.log(history);
   const location = useLocation();
-  const newId: string = new URLSearchParams(location.search).get("movies")
+  const movieKeyword: string = new URLSearchParams(location.search).get(
+    "movies"
+  )
     ? String(new URLSearchParams(location.search).get("movies"))
     : "";
 
-  const isSearch = bigMovieMatch?.params?.movieId
-    ? bigMovieMatch?.params.movieId
-    : newId;
+  const tvKeyword: string = new URLSearchParams(location.search).get("tvs")
+    ? String(new URLSearchParams(location.search).get("tvs"))
+    : "";
+
+  const searchKeyword = movieKeyword ? movieKeyword : tvKeyword;
+
+  const movieSearch = bigVideoMatch?.params?.movieId
+    ? bigVideoMatch?.params.movieId
+    : searchKeyword;
+
+  // console.log(movieSearch);
+
+  const tvSearch = bigVideoMatch?.params?.tvId
+    ? bigVideoMatch.params.tvId
+    : searchKeyword;
+
+  const isSearch = movieSearch ? movieSearch : tvSearch;
+  // console.log(
+  //   `isSearch: ${isSearch}, movieSearch : ${movieSearch}, tvSearch : ${tvSearch}`
+  // );
   //console.log(isSearch);
   const keyword = new URLSearchParams(location.search).get("keyword");
   const backUrl = `${location.pathname}?keyword=${keyword}`;
@@ -285,68 +301,86 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
   const onOverlayClicked = () => {
     setOver(false);
     if (!search) {
-      history.push("/");
+      if (isWhat === "movie") {
+        history.push("/");
+      } else if (isWhat === "tv") {
+        history.push("/tv");
+      }
     } else {
       history.push(`${backUrl}`);
     }
     //history.push(location);
   };
+  const detailData = useQuery<IGetVideoDetail>(["videos", "detail"], () =>
+    getVideoDetail(isWhat, isSearch)
+  );
+
+  const creditData = useQuery<IVideoCredit>(["video", "credit"], () =>
+    getVideoCredit(isWhat, isSearch)
+  );
+
+  const similarData = useQuery<ISimilarProps>(["video", "similar"], () =>
+    getSimilarData(isWhat, isSearch)
+  );
   //console.log(clicked);
-  const [over, setOver] = useState(false);
   // const { data } = useQuery<IGetVideoProps>(["movies", "video"], () =>
-  //   getVideo(bigMovieMatch?.params.movieId)
+  //   getVideo(bigVideoMatch=.params.movieId)
   // );
-  const detailData = useQuery<IGetMovieDetail>(["movies", "detail"], () =>
-    getMovieDetail(isSearch)
-  );
-  const creditData = useQuery<IMovieCredit>(["movies", "credit"], () =>
-    getMovieCredit(isSearch)
-  );
-  //console.log(creditData.data?.cast[0].name);
-  const similarData = useQuery<ISimilarMovie>(["movies", "similar"], () =>
-    getSimilarMovie(isSearch)
-  );
 
-  console.log(isSearch, detailData.data);
+  //console.log(similarMovieData);
+  // console.log(isSearch, creditData.data);
   //console.log(similarData.data?.results[0].id);
-  // const clickedMovie =
-  //   bigMovieMatch.params.movieId &&
-  //   movieData.find((item) => item.id === +bigMovieMatch.params.movieId)
-  //     ? movieData.find((item) => item.id === +bigMovieMatch.params.movieId)
+  // const clickedData =
+  //   bigVideoMatch=params.movieId &&
+  //   movieData.find((item) => item.id === +bigVideoMatch=params.movieId)
+  //     ? movieData.find((item) => item.id === +bigVideoMatch=params.movieId)
   //     : similarData?.data?.results?.find(
-  //         (item) => item.id === +bigMovieMatch.params.movieId
+  //         (item) => item.id === +bigVideoMatch=params.movieId
   //       );
+  const similarMovieMatch = useRouteMatch<{ movieId: string }>(
+    !search ? `/movies/:movieId` : `/search`
+  );
 
-  const clickedMovie =
-    isSearch &&
-    (movieData.find((item) => item.id === +isSearch)
-      ? movieData.find((item) => item.id === +isSearch)
-      : detailData.data);
+  const similarTvMatch = useRouteMatch<{ tvId: string }>(
+    !search ? `/tv/:tvId` : `/search`
+  );
 
+  const similarMatch = similarMovieMatch ? similarMovieMatch : similarTvMatch;
+
+  const clickedData = videoData
+    ? videoData.find((item) => item.id === +isSearch)
+    : detailData.data;
+  // console.log(similarData.data);
   const mouseEnter = (event: any) => {
     setOver(true);
   };
-  const similarMatch = useRouteMatch<{ movieId: string }>(
-    !search ? `/movies/:movieId` : `/search`
-  );
+  //console.log(similarMatch, similarMovieMatch, similarTvMatch);
+  //console.log(similarMovieMatch, similarMatch);
+  //console.log(similarTvMatch);
   //console.log(data, isLoading);
   //console.log(detailData.data);
   //console.log(similarData.data?.results[0]);
-  //console.log(bigMovieMatch.params.movieId);
-  const onBoxClicked = (movieId: number) => {
+  //console.log(bigVideoMatch=params.movieId);
+  const onBoxClicked = (id: number) => {
     setOver(false);
     setClicked(true);
     if (!search) {
-      history.push(`/movies/${movieId}`);
+      if (isWhat === "movie") {
+        history.push(`/movies/${id}`);
+      } else if (isWhat === "tv") {
+        history.push(`/tv/${id}`);
+      }
     } else if (search) {
-      history.push(
-        `${location.pathname}?$keyword=${keyword}&movies=${movieId}`
-      );
+      if (isWhat === "movie") {
+        history.push(`${location.pathname}?$keyword=${keyword}&movies=${id}`);
+      } else if (isWhat === "tv") {
+        history.push(`${location.pathname}?$keyword=${keyword}&tvs=${id}`);
+      }
     }
   };
   //console.log(moreMovie);
-  //console.log(clickedMovie?.poster_path);
-  // console.log(clickedMovie);
+  //console.log(clickedData?.poster_path);
+  console.log(clickedData);
   // console.log("무비ㅏ아이디임", movieId);
   // console.log(
   //   "시밀러 데이터 :",
@@ -356,25 +390,25 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
   //   "시밀러맷치",
   //   similarMatch
   // );
-  // console.log(detailData.data);
+  //console.log(clickedData);
   return (
     <AnimatePresence key={isSearch + "cxv"}>
-      {clickedMovie && (
+      {clickedData && (
         <Overlay
-          key={clickedMovie.vote_average + "4vc5"}
+          key={clickedData?.vote_average + "4vc5"}
           onClick={onOverlayClicked}
           exit={{ opacity: 0, zIndex: 0 }}
           animate={{ opacity: 1, zIndex: 2 }}
         ></Overlay>
       )}
-      {clickedMovie && (
+      {clickedData && (
         <BigMovie
           variants={opacityV}
           initial="entry"
           animate="normal"
           exit="exit"
           transition={{ delay: 0.3, duration: 0.5, type: "tween" }}
-          key={clickedMovie.original_title + "ERyt"}
+          key={clickedData.original_language + "ERyt"}
           style={{ top: scrollY.get() + 100, zIndex: 4 }}
           layoutId={isSearch}
         >
@@ -392,33 +426,37 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                 frameBorder={0}
                 userWidth={window.innerWidth}
                 bgPhoto={makeImageHelper(
-                  clickedMovie.backdrop_path
-                    ? clickedMovie.backdrop_path
-                    : clickedMovie.poster_path
-                    ? clickedMovie.poster_path
+                  clickedData.backdrop_path
+                    ? clickedData.backdrop_path
+                    : clickedData.poster_path
+                    ? clickedData.poster_path
                     : ""
                 )}
               ></BigCover>
             ) : (
               <BigCover
-                key={clickedMovie.poster_path}
+                key={clickedData.poster_path}
                 userWidth={window.innerWidth}
                 bgPhoto={makeImageHelper(
-                  clickedMovie.backdrop_path
-                    ? clickedMovie.backdrop_path
-                    : clickedMovie.poster_path
-                    ? clickedMovie.poster_path
+                  clickedData.backdrop_path
+                    ? clickedData.backdrop_path
+                    : clickedData.poster_path
+                    ? clickedData.poster_path
                     : ""
                 )}
               ></BigCover>
             )}
             <DisableCover
-              key={clickedMovie.release_date + "xc7aqw"}
+              key={clickedData.id + "xc7aqw"}
               isOver={over}
             ></DisableCover>
             <BigContainer>
-              <BigTitle key={clickedMovie.title}>{clickedMovie.title}</BigTitle>
-              <UserBox key={clickedMovie.popularity + "xc7"}>
+              <BigTitle
+                key={isWhat === "movie" ? clickedData.title : clickedData.name}
+              >
+                {isWhat === "movie" ? clickedData.title : clickedData.name}
+              </BigTitle>
+              <UserBox key={clickedData.popularity + "xc7"}>
                 <Playbox>
                   <i className="fas fa-play"></i>
                   <span>재생</span>
@@ -434,29 +472,41 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                 </PlayCircle>
               </UserBox>
               <DetailGrid key={detailData.data?.runtime + "zas74"}>
-                <DetailBox key={detailData.data?.release_date + "x54s"}>
+                <DetailBox
+                  key={
+                    isWhat === "movie"
+                      ? clickedData.release_date + "Asd"
+                      : clickedData.first_air_date + "x54s"
+                  }
+                >
                   <InfoBox>
-                    <MoiveAverage key={clickedMovie.vote_count + "as57s"}>
-                      {clickedMovie.vote_average
-                        ? `${(clickedMovie.vote_average * 10).toFixed(0)}% 일치`
+                    <MoiveAverage key={clickedData.vote_count + "as57s"}>
+                      {clickedData.vote_average
+                        ? `${(clickedData.vote_average * 10).toFixed(0)}% 일치`
                         : ""}
                     </MoiveAverage>
-                    <MovieInfoTop key={clickedMovie.release_date + "14a778a"}>
-                      {clickedMovie.release_date
-                        ? clickedMovie.release_date.slice(0, 4)
-                        : clickedMovie.release_date}
+                    <MovieInfoTop
+                      key={
+                        isWhat === "movie"
+                          ? clickedData.release_date + "Asszd"
+                          : clickedData.first_air_date + "x5xx4s"
+                      }
+                    >
+                      {isWhat === "movie" && clickedData?.release_date
+                        ? clickedData?.release_date.slice(0, 4)
+                        : clickedData.first_air_date?.slice(0, 4)}
                       년
                     </MovieInfoTop>
                     <MovieInfoTop key={detailData.data?.runtime + "1234"}>
-                      {detailData.data?.runtime === 0
-                        ? ""
-                        : detailData.data?.runtime === null
+                      {detailData.data?.runtime === 0 ||
+                      detailData.data?.runtime === null ||
+                      detailData.data?.runtime === undefined
                         ? ""
                         : `${detailData.data?.runtime}분`}
                     </MovieInfoTop>
                   </InfoBox>
-                  <BigOverview key={clickedMovie.overview}>
-                    {clickedMovie.overview}
+                  <BigOverview key={clickedData.overview}>
+                    {clickedData.overview}
                   </BigOverview>
                 </DetailBox>
                 {detailData.data?.genres &&
@@ -465,24 +515,26 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                     <DetailBox>
                       <InfoBox>
                         <InfoSpan>장르:</InfoSpan>
-                        {detailData.data?.genres.map((item) => (
+                        {detailData.data?.genres?.map((item: any) => (
                           <MovieInfo key={item.id}>{item.name},</MovieInfo>
                         ))}
                       </InfoBox>
 
                       <InfoBox>
                         <InfoSpan>출연진:</InfoSpan>
-                        <MovieInfo key={clickedMovie.overview}>
+                        <MovieInfo key={clickedData.overview}>
                           {creditData.data?.cast[0]
                             ? `${creditData.data?.cast[0].name},`
                             : ""}
                         </MovieInfo>
-                        <MovieInfo key={clickedMovie.id + "zxc54a"}>
+                        <MovieInfo key={clickedData.id + "zxc54a"}>
                           {creditData.data?.cast[1]
                             ? `${creditData.data?.cast[1].name},`
                             : ""}
                         </MovieInfo>
-                        <MovieInfo key={clickedMovie.original_title + "Sdf8"}>
+                        <MovieInfo
+                          key={detailData.data?.original_title + "Sdf8"}
+                        >
                           {creditData.data?.cast[2]
                             ? `${creditData.data?.cast[2].name}`
                             : ""}
@@ -490,17 +542,17 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                       </InfoBox>
                       <InfoBox>
                         <InfoSpan>크리에이터:</InfoSpan>
-                        <MovieInfo key={clickedMovie.overview + "Fxc74"}>
+                        <MovieInfo key={clickedData.overview + "Fxc74"}>
                           {creditData.data?.crew[0]
                             ? `${creditData.data?.crew[0].name},`
                             : ""}
                         </MovieInfo>
-                        <MovieInfo key={clickedMovie.popularity + "ewg4"}>
+                        <MovieInfo key={clickedData.popularity + "ewg4"}>
                           {creditData.data?.crew[1]
                             ? `${creditData.data?.crew[1].name},`
                             : ""}
                         </MovieInfo>
-                        <MovieInfo key={clickedMovie.poster_path}>
+                        <MovieInfo key={clickedData.poster_path}>
                           {creditData.data?.crew[2]
                             ? `${creditData.data?.crew[2].name}`
                             : ""}
@@ -525,7 +577,9 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                       >
                         {similarMatch && similarData.data?.results && (
                           <MoreCover
-                            key={similarData.data?.results[item].original_title}
+                            key={
+                              similarData.data?.results[item].overview + "asd"
+                            }
                             bgPhoto={makeImageHelper(
                               similarData.data?.results[item]?.backdrop_path
                                 ? similarData.data?.results[item]?.backdrop_path
@@ -537,9 +591,15 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                           key={similarData.data?.results[item].overview}
                         >
                           <MoreTitle
-                            key={similarData.data?.results[item].title}
+                            key={
+                              isWhat === "movie"
+                                ? similarData.data?.results[item].title
+                                : similarData.data?.results[item].name
+                            }
                           >
-                            {similarData.data?.results[item].title}
+                            {isWhat === "movie"
+                              ? similarData.data?.results[item].title
+                              : similarData.data?.results[item].name}
                           </MoreTitle>
                           <MoiveAverage
                             key={similarData.data?.results[item].genre_ids[0]}
@@ -553,16 +613,15 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
                           </MoiveAverage>
                           <MoreInfo
                             key={similarData.data?.results[item].poster_path}
-                          >
-                            {similarData.data?.results[
-                              item
-                            ]..slice(0, 4)}
-                          </MoreInfo>
+                          ></MoreInfo>
                           {similarData.data?.results[item].overview && (
                             <MoreInfo
                               key={
-                                similarData.data?.results[item].release_date +
-                                "cbbike"
+                                isWhat === "movie"
+                                  ? similarData.data?.results[item]
+                                      .release_date + "cbbike"
+                                  : similarData.data?.results[item]
+                                      .first_air_date + "zxc"
                               }
                             >
                               {similarData.data?.results[item].overview.length >
@@ -582,14 +641,27 @@ function ClickMovie({ bigMovieMatch, movieData, search }: IClickMovie) {
           </>
         </BigMovie>
       )}
-      {similarData.data?.results && clicked && similarMatch ? (
+      {similarData.data?.results && clicked && similarMovieMatch ? (
         <ClickMovie
           key={similarData.data.results[0].id + "RGd"}
-          bigMovieMatch={similarMatch}
-          movieData={similarData.data?.results}
+          bigVideoMatch={similarMovieMatch}
+          videoData={similarData.data?.results}
+          isWhat={isWhat}
           search={search}
         />
-      ) : null}
+      ) : (
+        similarData.data?.results &&
+        clicked &&
+        similarTvMatch && (
+          <ClickMovie
+            key={similarData.data.results[0].id + "RGd"}
+            bigVideoMatch={similarTvMatch}
+            videoData={similarData.data?.results}
+            isWhat={isWhat}
+            search={search}
+          />
+        )
+      )}
       )
     </AnimatePresence>
   );
