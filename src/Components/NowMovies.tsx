@@ -2,7 +2,7 @@ import { AnimatePresence, motion, Variants } from "framer-motion";
 import React, { useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import styled from "styled-components";
-import { IGetMoviesProps, IMovie } from "../api";
+import { IMovie } from "../api";
 import { makeImageHelper } from "../utils";
 import ClickMovie from "./ClickMovie";
 
@@ -10,6 +10,7 @@ const Slider = styled.div`
   position: relative;
   height: 180px;
   top: -170px;
+  margin-bottom: 70px;
 `;
 
 const Row = styled(motion.div)<{ isFirst: number; hover: boolean }>`
@@ -166,13 +167,13 @@ const ArrowVariants: Variants = {
 const offset = 6;
 
 interface INowProps {
-  movieData: IMovie[];
-  page1?: IGetMoviesProps;
-  sliderTitle: string;
+  videoData: IMovie[];
+  sliderTitle?: string;
   search?: string;
+  isWhat: string;
 }
 
-function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
+function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
   const history = useHistory();
   const location = useLocation();
   //console.log(pathName);
@@ -187,10 +188,10 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
   const [back, setBack] = useState(false);
   const [hover, setHover] = useState(false);
   const [index, setIndex] = useState(0);
-  const totalMovies = movieData.length - 1;
+  const totalMovies = videoData.length - 1;
   const maxIndex = Math.floor(totalMovies / offset) - 1;
   const decreaseIndex = () => {
-    if (page1) {
+    if (videoData) {
       if (leaving) return;
       setBack(false);
       toggleLeaving();
@@ -199,7 +200,7 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
     }
   };
   const increaseIndex = () => {
-    if (page1) {
+    if (videoData) {
       if (leaving) return;
       setBack(true);
       toggleLeaving();
@@ -209,36 +210,44 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
     }
   };
   const keyword = new URLSearchParams(location.search).get("keyword");
-  const onBoxClicked = (movieId: number) => {
+  const onBoxClicked = (id: number) => {
+    //console.log(id);
     if (!search) {
-      history.push(`/movies/${movieId}`);
+      if (isWhat === "movie") {
+        history.push(`/movies/${id}`);
+      } else if (isWhat === "tv") {
+        history.push(`/tv/${id}`);
+      }
     } else if (search) {
-      history.push(`/search?keyword=${keyword}&movies=${movieId}`);
+      if (isWhat === "movie") {
+        history.push(`/search?keyword=${keyword}&movies=${id}`);
+      } else if (isWhat === "tv") {
+        history.push(`/search?keyword=${keyword}&tv=${id}`);
+      }
     }
   };
   const bigMovieMatch = useRouteMatch<{ movieId?: string }>(
     !search ? `/movies/:movieId` : `/search`
   );
-  console.log("빅매치임", bigMovieMatch);
-  //console.log(bigMovieMatch);
-  //console.log("로우 호버의 값: ", rowHover);
+
+  const bigTvMatch = useRouteMatch<{ tvId?: string }>(
+    !search ? `/tv/:tvId` : `/search`
+  );
 
   return (
     <>
       <Slider
-        key={index + 324}
         onMouseLeave={rowMouseEnterLeave}
         onMouseEnter={rowMouseEnterLeave}
       >
         <AnimatePresence
           onExitComplete={toggleLeaving}
           initial={false}
-          key={index + 82312}
           custom={back}
         >
-          <ArchiveContainer key={index + 8678}>
+          <ArchiveContainer>
             <Archive key={sliderTitle + "cvxbfg"}>{sliderTitle}</Archive>
-            <IndexBoxs key={index + 7787}>
+            <IndexBoxs>
               {rowHover &&
                 Array.from({ length: maxIndex + 1 }, (v, i) => i).map(
                   (item) => (
@@ -279,18 +288,18 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
                 initial={false}
                 transition={{ type: "tween", duration: 0.1 }}
                 bgPhoto={makeImageHelper(
-                  movieData
+                  videoData
                     ? index === 0
-                      ? movieData[
-                          Math.floor((movieData.length - 1) / 6) * offset
+                      ? videoData[
+                          Math.floor((videoData.length - 1) / 6) * offset
                         ]?.backdrop_path
-                      : movieData[offset * index]?.backdrop_path
+                      : videoData[offset * index]?.backdrop_path
                     : "",
                   "w500"
                 )}
               ></Box>
             ) : null}
-            {movieData
+            {videoData
               .slice(1)
               .slice(offset * index, offset * index + offset)
               .map((item) => (
@@ -322,11 +331,11 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
                 key="nextBox"
                 variants={boxVariants}
                 initial="normal"
-                layoutId={movieData[offset * index + offset + 1]?.id + ""}
+                layoutId={videoData[offset * index + offset + 1]?.id + ""}
                 transition={{ type: "tween", duration: 0.1 }}
                 bgPhoto={makeImageHelper(
-                  movieData
-                    ? movieData[offset * index + offset + 1]?.backdrop_path
+                  videoData
+                    ? videoData[offset * index + offset + 1]?.backdrop_path
                     : "",
                   "w500"
                 )}
@@ -336,10 +345,10 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
                 key="nextBox"
                 variants={boxVariants}
                 initial="normal"
-                layoutId={movieData[1].id + ""}
+                layoutId={videoData[1].id + ""}
                 transition={{ type: "tween", duration: 0.1 }}
                 bgPhoto={makeImageHelper(
-                  movieData ? movieData[1]?.backdrop_path : "",
+                  videoData ? videoData[1]?.backdrop_path : "",
                   "w500"
                 )}
               ></Box>
@@ -361,14 +370,24 @@ function NowMovies({ movieData, page1, sliderTitle, search }: INowProps) {
           )
         </AnimatePresence>
       </Slider>
-      {bigMovieMatch ? (
+      {bigMovieMatch && isWhat === "movie" && (
         <ClickMovie
           key={"xvcmds"}
-          bigMovieMatch={bigMovieMatch}
-          movieData={movieData}
+          bigVideoMatch={bigMovieMatch}
+          videoData={videoData}
           search={search}
+          isWhat="movie"
         />
-      ) : null}
+      )}
+      {bigTvMatch && isWhat === "tv" && (
+        <ClickMovie
+          key={"xvcmds"}
+          bigVideoMatch={bigTvMatch}
+          videoData={videoData}
+          search={search}
+          isWhat="tv"
+        />
+      )}
     </>
   );
 }

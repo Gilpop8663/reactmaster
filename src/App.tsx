@@ -2,7 +2,7 @@ import { Helmet } from "react-helmet";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import Header from "./Components/Header";
 import Home from "./Routes/Home";
-import Search from "./Routes/Search";
+// import Search from "./Routes/Search";
 import Tv from "./Routes/Tv";
 
 function App() {
@@ -19,10 +19,8 @@ function App() {
       <Router>
         <Header />
         <Switch>
-          <Route path={["/search"]}>
-            <Search />
-          </Route>
-          <Route path="/tv">
+          <Route path={["/search"]}>{/* <Search /> */}</Route>
+          <Route path={["/tv", "/tv/:tvid"]}>
             <Tv />
           </Route>
           <Route path={["/", "/movies/:movieId"]}>

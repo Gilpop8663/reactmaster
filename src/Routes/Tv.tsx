@@ -1,19 +1,23 @@
 import { useQuery } from "react-query";
+import { useLocation } from "react-router-dom";
 import styled from "styled-components";
-import { getTvOnAir, IOnAirData } from "../api";
+import { getTvOnAir, IGetVideosProps } from "../api";
 import NowMovies from "../Components/NowMovies";
-import TvSlider from "../Components/TvSlider";
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  padding-top: 500px;
+`;
 function Tv() {
-  const onAirData = useQuery<IOnAirData>(["Tv", "onAir"], getTvOnAir);
+  const location = useLocation();
+  const onAirData = useQuery<IGetVideosProps>(["Tv", "onAir"], getTvOnAir);
   // console.log(onAirData.data);
   return (
     <Wrapper>
       {onAirData.data && (
-        <TvSlider
-          movieData={onAirData.data?.results}
-          page1={onAirData.data}
+        <NowMovies
+          isWhat="tv"
+          videoData={onAirData.data?.results}
+          search={location.search ? location.search : ""}
           sliderTitle="지금 방송중인 TV 쇼"
         />
       )}
