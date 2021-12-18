@@ -21,9 +21,6 @@ const Loader = styled.div`
   justify-content: center;
   align-items: center;
 `;
-const Slider = styled.div`
-  margin-bottom: 70px;
-`;
 
 function Search() {
   const location = useLocation();
@@ -71,37 +68,31 @@ function Search() {
       ) : (
         <>
           {searchData.data?.results[0] && (
-            <Slider key={location.search}>
-              <NowMovies
-                key={new URLSearchParams(location.search).get("keyword")}
-                search={location.search ? location.search : ""}
-                movieData={searchData.data?.results}
-                page1={searchData?.data}
-                sliderTitle={`${keyword}에 대한 검색`}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="tv"
+              key={new URLSearchParams(location.search).get("keyword")}
+              search={location.search ? location.search : ""}
+              videoData={searchData.data?.results}
+              sliderTitle={`${keyword}에 대한 검색`}
+            />
           )}
           {searchData2.data?.results[0] && (
-            <Slider key={location.key}>
-              <NowMovies
-                key={word + "456"}
-                search={location.search ? location.search : ""}
-                movieData={searchData2.data?.results}
-                page1={searchData2?.data}
-                sliderTitle={`${keyword}에 대한 검색`}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="tv"
+              key={word + "456"}
+              search={location.search ? location.search : ""}
+              videoData={searchData2.data?.results}
+              sliderTitle={`${keyword}에 대한 검색`}
+            />
           )}
           {searchData3.data?.results[0] && (
-            <Slider key={location.pathname + "789"}>
-              <NowMovies
-                key={location.key?.slice(0, 3)}
-                search={location.search ? location.search : ""}
-                movieData={searchData3.data?.results}
-                page1={searchData3?.data}
-                sliderTitle={`${keyword}에 대한 검색`}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="tv"
+              key={location.key?.slice(0, 3)}
+              search={location.search ? location.search : ""}
+              videoData={searchData3.data?.results}
+              sliderTitle={`${keyword}에 대한 검색`}
+            />
           )}
         </>
       )}
