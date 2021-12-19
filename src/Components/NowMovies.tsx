@@ -179,6 +179,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
   //console.log(pathName);
   const [leaving, setLeaving] = useState(false);
   const [rowHover, setRowHover] = useState(false);
+  const [isSearch, setIsSearch] = useState(false);
   const rowMouseEnterLeave = () => {
     setRowHover((prev) => !prev);
   };
@@ -209,7 +210,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
       setIndex((prev) => (index === maxIndex ? 0 : prev + 1));
     }
   };
-  const keyword = new URLSearchParams(location.search).get("keyword");
+  let keyword = new URLSearchParams(location.search).get("keyword");
   const onBoxClicked = (id: number) => {
     //console.log(id);
     if (!search) {
@@ -226,13 +227,28 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
       }
     }
   };
+  // console.log(isSearch);
   const bigMovieMatch = useRouteMatch<{ movieId?: string }>(
-    !search ? `/movies/:movieId` : `/search`
+    !search ? `/movies/:movieId` : "undefined"
   );
 
   const bigTvMatch = useRouteMatch<{ tvId?: string }>(
-    !search ? `/tv/:tvId` : `/search`
+    !search ? `/tv/:tvId` : "undefined"
   );
+
+  const locationTv = {
+    params: {
+      tvId: new URLSearchParams(location.search).get("tv"),
+    },
+  };
+  // console.log(locationTv);
+  const locationMovie = {
+    params: {
+      movieId: new URLSearchParams(location.search).get("movies"),
+    },
+  };
+
+  //console.log(locationTv, locationMovie);
 
   return (
     <>
@@ -322,7 +338,9 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
                   key={item.id}
                 >
                   <Info key="movieInfo" variants={infoVariants}>
-                    <h4 key="movieTitle">{item.title}</h4>
+                    <h4 key="movieTitle">
+                      {isWhat === "movie" ? item.title : item.name}
+                    </h4>
                   </Info>
                 </Box>
               ))}
@@ -370,24 +388,30 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
           )
         </AnimatePresence>
       </Slider>
-      {bigMovieMatch && isWhat === "movie" && (
-        <ClickMovie
-          key={"xvcmds"}
-          bigVideoMatch={bigMovieMatch}
-          videoData={videoData}
-          search={search}
-          isWhat="movie"
-        />
-      )}
-      {bigTvMatch && isWhat === "tv" && (
-        <ClickMovie
-          key={"xvcmds"}
-          bigVideoMatch={bigTvMatch}
-          videoData={videoData}
-          search={search}
-          isWhat="tv"
-        />
-      )}
+      {(locationMovie.params.movieId
+        ? locationMovie.params.movieId?.length >= 1
+        : false || bigMovieMatch) &&
+        isWhat === "movie" && (
+          <ClickMovie
+            key={"xvcmds"}
+            bigVideoMatch={bigMovieMatch ? bigMovieMatch : locationMovie}
+            videoData={videoData}
+            search={search}
+            isWhat="movie"
+          />
+        )}
+      {(locationTv.params.tvId
+        ? locationTv.params.tvId?.length >= 1
+        : false || bigTvMatch) &&
+        isWhat === "tv" && (
+          <ClickMovie
+            key={"xvcmds"}
+            bigVideoMatch={bigTvMatch ? bigTvMatch : locationTv}
+            videoData={videoData}
+            search={search}
+            isWhat="tv"
+          />
+        )}
     </>
   );
 }

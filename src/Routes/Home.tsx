@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -51,7 +50,6 @@ function Home() {
   const recommendData: IMovie[] = [];
   const topRateMovies: IMovie[] = [];
   const recommendData2: IMovie[] = [];
-  const [isLoading, setIsLoading] = useState(true);
   const nowPage1 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage1"],
     getMoviesPage1
@@ -123,9 +121,7 @@ function Home() {
   topRatePage4?.data?.results.map((item) => recommendData2.push(item));
   topRatePage5?.data?.results.map((item) => recommendData2.push(item));
   topRatePage6?.data?.results.map((item) => recommendData2.push(item));
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
+
   // console.log(clickedMovie);
   //console.log(index, "인뎃으");
   //console.log(nowMovieData, isLoading);
@@ -134,7 +130,7 @@ function Home() {
 
   return (
     <Wrapper>
-      {isLoading ? (
+      {recommendData2.length < 58 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>

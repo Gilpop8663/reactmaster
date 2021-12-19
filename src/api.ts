@@ -232,21 +232,9 @@ export function getVideoCredit(format: string, id: string) {
   ).then((response) => response.json());
 }
 
-export function getSearchMovie(id: string) {
-  return fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}`).then(
-    (response) => response.json()
-  );
-}
-
-export function getSearchMovie2(id: string) {
+export function getSearchVideo(format: string, id: string) {
   return fetch(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=2`
-  ).then((response) => response.json());
-}
-
-export function getSearchMovie3(id: string) {
-  return fetch(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=3`
+    `${BASE_URL}/search/${format}?api_key=${API_KEY}&query=${id}&page=1`
   ).then((response) => response.json());
 }
 
