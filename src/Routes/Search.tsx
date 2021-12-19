@@ -80,15 +80,6 @@ function Search() {
               sliderTitle={`Movie 카테고리 : ${keyword}`}
             />
           )}
-          {searchData3.data?.results[1] && (
-            <NowMovies
-              key={word + "4526"}
-              search={location.search ? location.search : ""}
-              videoData={searchData3.data?.results}
-              isWhat="person"
-              sliderTitle={`Person 카테고리 : ${keyword}`}
-            />
-          )}
         </>
       )}
     </Wrapper>

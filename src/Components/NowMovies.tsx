@@ -398,6 +398,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
             videoData={videoData}
             search={search}
             isWhat="movie"
+            keyword={keyword ? keyword : undefined}
           />
         )}
       {(locationTv.params.tvId
@@ -410,6 +411,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
             videoData={videoData}
             search={search}
             isWhat="tv"
+            keyword={keyword ? keyword : undefined}
           />
         )}
     </>

@@ -252,6 +252,7 @@ interface IClickMovie {
   videoData: IMovie[];
   isWhat: string;
   search?: string;
+  keyword?: string;
 }
 
 const opacityV: Variants = {
@@ -266,7 +267,13 @@ const opacityV: Variants = {
   },
 };
 
-function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
+function ClickMovie({
+  bigVideoMatch,
+  isWhat,
+  videoData,
+  search,
+  keyword,
+}: IClickMovie) {
   //console.log(videoData);
   const history = useHistory();
   const { scrollY } = useViewportScroll();
@@ -304,8 +311,6 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
   //   `isSearch: ${isSearch}, movieSearch : ${movieSearch}, tvSearch : ${tvSearch}`
   // );
   //console.log(isSearch);
-  const keyword = new URLSearchParams(location.search).get("keyword");
-  console.log(keyword);
   const backUrl = `${location.pathname}?keyword=${keyword}`;
   //console.log(location.pathname);
   //  console.log(backUrl);
@@ -372,7 +377,7 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
   const detailData = useQuery<IGetVideoDetail>(["videos", "detail"], () =>
     getVideoDetail(isWhat, isSearch)
   );
-
+  console.log(isSearch);
   const clickedData = videoData.find((item) => item.id === +isSearch)
     ? videoData.find((item) => item.id === +isSearch)
     : detailData.data;
@@ -398,9 +403,9 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
       }
     } else if (search) {
       if (isWhat === "movie") {
-        history.push(`${location.pathname}?$keyword=${keyword}&movies=${id}`);
+        history.push(`${location.pathname}?keyword=${keyword}&movies=${id}`);
       } else if (isWhat === "tv") {
-        history.push(`${location.pathname}?$keyword=${keyword}&tv=${id}`);
+        history.push(`${location.pathname}?keyword=${keyword}&tv=${id}`);
       }
     }
   };
@@ -694,7 +699,7 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
               clicked &&
               (similarMovieMatch ||
               (locationMovie?.params?.movieId
-                ? locationMovie?.params?.movieId?.length >= 1
+                ? locationMovie?.params?.movieId === isSearch
                 : false) ? (
                 <ClickMovie
                   key={clickedData?.id + "az40"}
@@ -704,13 +709,14 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
                   videoData={similarData.data?.results}
                   isWhat={"movie"}
                   search={search}
+                  keyword={keyword ? keyword : undefined}
                 />
               ) : (
                 similarData.data?.results &&
                 clicked &&
                 (similarTvMatch ||
                   (locationTv?.params?.tvId
-                    ? locationTv?.params?.tvId?.length >= 1
+                    ? locationTv?.params?.tvId === isSearch
                     : false)) && (
                   <ClickMovie
                     key={clickedData?.id + "az41"}
@@ -718,6 +724,7 @@ function ClickMovie({ bigVideoMatch, isWhat, videoData, search }: IClickMovie) {
                     videoData={similarData.data?.results}
                     isWhat={"tv"}
                     search={search}
+                    keyword={keyword ? keyword : undefined}
                   />
                 )
               ))}
