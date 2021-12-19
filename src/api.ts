@@ -13,12 +13,14 @@ export interface IMovie {
   poster_path: string;
   release_date?: string;
   title?: string;
-  video?: boolean;
+  video: boolean;
   vote_average: number;
   vote_count: number;
+  name?: string;
+  first_air_date?: string;
 }
 
-export interface IGetMoviesProps {
+export interface IGetVideosProps {
   dates?: {
     maximum: string;
     minimum: string;
@@ -29,27 +31,12 @@ export interface IGetMoviesProps {
   total_results: number;
 }
 
-export interface IGetVideoProps {
-  id: number;
-  results: [
-    {
-      id: string;
-      iso_639_1: string;
-      iso_3166_1: string;
-      key: string;
-      name: string;
-      official: boolean;
-      published_at: string;
-      site: string;
-      size: number;
-      type: string;
-    }
-  ];
-}
-
-export interface IGetMovieDetail {
+export interface IGetVideoDetail {
   data: object;
-
+  name?: string;
+  first_air_date?: string;
+  origin_country?: string[];
+  original_name?: string;
   dataUpdatedAt: number;
   errorUpdatedAt: number;
   failureCount: number;
@@ -94,7 +81,7 @@ export interface IGetMovieDetail {
   };
 }
 
-export interface IMovieCredit {
+export interface IVideoCredit {
   cast: ICast[];
   crew: ICrew[];
   id: number;
@@ -129,7 +116,7 @@ interface ICrew {
   profile_path: string;
 }
 
-export interface ISimilarMovie {
+export interface ISimilarProps {
   page: number;
   results: IMovie[];
   total_pages: number;
@@ -143,7 +130,7 @@ export interface ISearchMovie {
   total_results: number;
 }
 
-export interface IOnAir {
+export interface ITvProps {
   backdrop_path: string;
   first_air_date: string;
   genre_ids: number[];
@@ -159,13 +146,12 @@ export interface IOnAir {
   vote_count: number;
 }
 
-export interface IOnAirData {
+export interface IGetTvProps {
   page: number;
-  results: IOnAir[];
+  results: ITvProps[];
   total_pages: number;
   total_results: number;
 }
-
 export function getMoviesPage1() {
   return fetch(
     `${BASE_URL}/movie/now_playing?api_key=${API_KEY}&language=en-US&page=1`
@@ -234,45 +220,21 @@ export function topRateMoviePage6() {
   ).then((response) => response.json());
 }
 
-export function getVideo(id: string) {
+export function getVideoDetail(format: string, id: string) {
   return fetch(
-    `${BASE_URL}/movie/${id}/videos?api_key=${API_KEY}&language=en-US`
+    `${BASE_URL}/${format}/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos`
   ).then((response) => response.json());
 }
 
-export function getMovieDetail(id: string) {
+export function getVideoCredit(format: string, id: string) {
   return fetch(
-    `${BASE_URL}/movie/${id}?api_key=${API_KEY}&language=en-US&append_to_response=videos,images`
+    `${BASE_URL}/${format}/${id}/credits?api_key=${API_KEY}&language=en-US`
   ).then((response) => response.json());
 }
 
-export function getMovieCredit(id: string) {
+export function getSearchVideo(format: string, id: string) {
   return fetch(
-    `${BASE_URL}/movie/${id}/credits?api_key=${API_KEY}&language=en-US`
-  ).then((response) => response.json());
-}
-
-export function getSimilarMovie(id: string) {
-  return fetch(
-    `${BASE_URL}/movie/${id}/similar?api_key=${API_KEY}&language=en-US&page=1`
-  ).then((response) => response.json());
-}
-
-export function getSearchMovie(id: string) {
-  return fetch(`${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}`).then(
-    (response) => response.json()
-  );
-}
-
-export function getSearchMovie2(id: string) {
-  return fetch(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=2`
-  ).then((response) => response.json());
-}
-
-export function getSearchMovie3(id: string) {
-  return fetch(
-    `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${id}&page=3`
+    `${BASE_URL}/search/${format}?api_key=${API_KEY}&query=${id}&page=1`
   ).then((response) => response.json());
 }
 
@@ -282,9 +244,9 @@ export function getTvOnAir() {
   ).then((response) => response.json());
 }
 
-export function getTvSimilar(id: string) {
+export function getSimilarData(format: string, id: string) {
   return fetch(
     `
-    ${BASE_URL}/tv/${id}/similar?api_key=${API_KEY}}&language=en-US&page=1`
+    ${BASE_URL}/${format}/${id}/similar?api_key=${API_KEY}&language=en-US&page=1`
   ).then((response) => response.json());
 }

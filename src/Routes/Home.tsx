@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import { useLocation } from "react-router-dom";
 import styled from "styled-components";
@@ -9,7 +8,7 @@ import {
   getMoviesPage4,
   getMoviesPage5,
   getMoviesPage6,
-  IGetMoviesProps,
+  IGetVideosProps,
   IMovie,
   topRateMoviePage1,
   topRateMoviePage2,
@@ -45,67 +44,63 @@ const Overview = styled.p`
   font-size: 34px;
   width: 50%;
 `;
-const Slider = styled.div`
-  margin-bottom: 70px;
-`;
 
 function Home() {
   const nowMovieData: IMovie[] = [];
   const recommendData: IMovie[] = [];
   const topRateMovies: IMovie[] = [];
   const recommendData2: IMovie[] = [];
-  const [isLoading, setIsLoading] = useState(true);
-  const nowPage1 = useQuery<IGetMoviesProps>(
+  const nowPage1 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage1"],
     getMoviesPage1
   );
-  const nowPage2 = useQuery<IGetMoviesProps>(
+  const nowPage2 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage2"],
     getMoviesPage2
   );
-  const nowPage3 = useQuery<IGetMoviesProps>(
+  const nowPage3 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage3"],
     getMoviesPage3
   );
-  const nowPage4 = useQuery<IGetMoviesProps>(
+  const nowPage4 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage4"],
     getMoviesPage4
   );
-  const nowPage5 = useQuery<IGetMoviesProps>(
+  const nowPage5 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage5"],
     getMoviesPage5
   );
-  const nowPage6 = useQuery<IGetMoviesProps>(
+  const nowPage6 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage6"],
     getMoviesPage6
   );
 
-  const topRatePage1 = useQuery<IGetMoviesProps>(
+  const topRatePage1 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage1"],
     topRateMoviePage1
   );
 
-  const topRatePage2 = useQuery<IGetMoviesProps>(
+  const topRatePage2 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage2"],
     topRateMoviePage2
   );
 
-  const topRatePage3 = useQuery<IGetMoviesProps>(
+  const topRatePage3 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage3"],
     topRateMoviePage3
   );
 
-  const topRatePage4 = useQuery<IGetMoviesProps>(
+  const topRatePage4 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage4"],
     topRateMoviePage4
   );
 
-  const topRatePage5 = useQuery<IGetMoviesProps>(
+  const topRatePage5 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage5"],
     topRateMoviePage5
   );
 
-  const topRatePage6 = useQuery<IGetMoviesProps>(
+  const topRatePage6 = useQuery<IGetVideosProps>(
     ["movies", "topRatePage6"],
     topRateMoviePage6
   );
@@ -126,9 +121,7 @@ function Home() {
   topRatePage4?.data?.results.map((item) => recommendData2.push(item));
   topRatePage5?.data?.results.map((item) => recommendData2.push(item));
   topRatePage6?.data?.results.map((item) => recommendData2.push(item));
-  useEffect(() => {
-    setIsLoading(false);
-  }, []);
+
   // console.log(clickedMovie);
   //console.log(index, "인뎃으");
   //console.log(nowMovieData, isLoading);
@@ -137,7 +130,7 @@ function Home() {
 
   return (
     <Wrapper>
-      {isLoading ? (
+      {recommendData2.length < 58 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -150,44 +143,36 @@ function Home() {
             <Overview>{nowPage1.data?.results[0].overview}</Overview>
           </Banner>
           {nowMovieData && (
-            <Slider>
-              <NowMovies
-                movieData={nowMovieData}
-                search={location.search ? location.search : ""}
-                page1={nowPage1?.data}
-                sliderTitle={"지금 뜨는 콘텐츠"}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="movie"
+              videoData={nowMovieData}
+              search={location.search ? location.search : ""}
+              sliderTitle={"지금 뜨는 콘텐츠"}
+            />
           )}
           {topRateMovies && (
-            <Slider>
-              <NowMovies
-                movieData={topRateMovies}
-                search={location.search ? location.search : ""}
-                page1={topRatePage1?.data}
-                sliderTitle={"님의 취향 저격 베스트 콘텐츠"}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="movie"
+              videoData={topRateMovies}
+              search={location.search ? location.search : ""}
+              sliderTitle={"님의 취향 저격 베스트 콘텐츠"}
+            />
           )}
           {recommendData && (
-            <Slider>
-              <NowMovies
-                movieData={recommendData}
-                search={location.search ? location.search : ""}
-                page1={nowPage4?.data}
-                sliderTitle={"인기 있는 영화순위"}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="movie"
+              videoData={recommendData}
+              search={location.search ? location.search : ""}
+              sliderTitle={"인기 있는 영화순위"}
+            />
           )}
           {recommendData2 && (
-            <Slider>
-              <NowMovies
-                movieData={recommendData2}
-                search={location.search ? location.search : ""}
-                page1={topRatePage4?.data}
-                sliderTitle={"워워드 수상 해외영화"}
-              />
-            </Slider>
+            <NowMovies
+              isWhat="movie"
+              videoData={recommendData2}
+              search={location.search ? location.search : ""}
+              sliderTitle={"워워드 수상 해외영화"}
+            />
           )}
         </>
       )}
