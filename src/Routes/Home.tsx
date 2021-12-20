@@ -8,6 +8,8 @@ import {
   getMoviesPage4,
   getMoviesPage5,
   getMoviesPage6,
+  getVideoDetail,
+  IGetVideoDetail,
   IGetVideosProps,
   IMovie,
   topRateMoviePage1,
@@ -17,6 +19,7 @@ import {
   topRateMoviePage5,
   topRateMoviePage6,
 } from "../api";
+import BannerScreen from "../Components/BannerScreen";
 import NowMovies from "../Components/NowMovies";
 import { makeImageHelper } from "../utils";
 
@@ -134,14 +137,10 @@ function Home() {
         <Loader>Loading...</Loader>
       ) : (
         <>
-          <Banner
-            isBack={makeImageHelper(
-              nowPage1.data?.results[0]?.backdrop_path || ""
-            )}
-          >
-            <Title>{nowPage1.data?.results[0].title}</Title>
-            <Overview>{nowPage1.data?.results[0].overview}</Overview>
-          </Banner>
+          {nowPage1.data?.results[0] && (
+            <BannerScreen videoData={nowPage1.data} isWhat="movie" />
+          )}
+
           {nowMovieData && (
             <NowMovies
               isWhat="movie"
