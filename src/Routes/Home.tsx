@@ -8,8 +8,7 @@ import {
   getMoviesPage4,
   getMoviesPage5,
   getMoviesPage6,
-  getVideoDetail,
-  IGetVideoDetail,
+  getUpcommingData,
   IGetVideosProps,
   IMovie,
   topRateMoviePage1,
@@ -20,39 +19,19 @@ import {
   topRateMoviePage6,
 } from "../api";
 import BannerScreen from "../Components/BannerScreen";
+import Footer from "../Components/Footer";
 import NowMovies from "../Components/NowMovies";
-import { makeImageHelper } from "../utils";
 
 const Wrapper = styled.div``;
 
-const Banner = styled.div<{ isBack: string }>`
-  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 1)),
-    url(${(props) => props.isBack});
-  background-size: cover;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 100vh;
-  padding: 60px;
-`;
-
 const Loader = styled.div``;
-
-const Title = styled.h2`
-  font-size: 64px;
-  margin-bottom: 20px;
-`;
-
-const Overview = styled.p`
-  font-size: 34px;
-  width: 50%;
-`;
 
 function Home() {
   const nowMovieData: IMovie[] = [];
   const recommendData: IMovie[] = [];
   const topRateMovies: IMovie[] = [];
   const recommendData2: IMovie[] = [];
+  const upcommingData: IMovie[] = [];
   const nowPage1 = useQuery<IGetVideosProps>(
     ["movies", "nowPlayingPage1"],
     getMoviesPage1
@@ -108,6 +87,19 @@ function Home() {
     topRateMoviePage6
   );
 
+  const upcommingPage1 = useQuery<IGetVideosProps>(
+    ["movies", "upcomming1"],
+    () => getUpcommingData(1)
+  );
+  const upcommingPage2 = useQuery<IGetVideosProps>(
+    ["movies", "upcomming2"],
+    () => getUpcommingData(2)
+  );
+  const upcommingPage3 = useQuery<IGetVideosProps>(
+    ["movies", "upcomming3"],
+    () => getUpcommingData(3)
+  );
+
   //console.log(nowPage1);
   nowPage1?.data?.results.map((item) => nowMovieData.push(item));
   nowPage2?.data?.results.map((item) => nowMovieData.push(item));
@@ -125,6 +117,9 @@ function Home() {
   topRatePage5?.data?.results.map((item) => recommendData2.push(item));
   topRatePage6?.data?.results.map((item) => recommendData2.push(item));
 
+  upcommingPage1.data?.results.map((item) => upcommingData.push(item));
+  upcommingPage2.data?.results.map((item) => upcommingData.push(item));
+  upcommingPage3.data?.results.map((item) => upcommingData.push(item));
   // console.log(clickedMovie);
   //console.log(index, "인뎃으");
   //console.log(nowMovieData, isLoading);
@@ -133,7 +128,7 @@ function Home() {
 
   return (
     <Wrapper>
-      {recommendData2.length < 58 ? (
+      {upcommingData.length < 58 ? (
         <Loader>Loading...</Loader>
       ) : (
         <>
@@ -143,6 +138,7 @@ function Home() {
 
           {nowMovieData && (
             <NowMovies
+              unqKey="qw1"
               isWhat="movie"
               videoData={nowMovieData}
               search={location.search ? location.search : ""}
@@ -151,14 +147,16 @@ function Home() {
           )}
           {topRateMovies && (
             <NowMovies
+              unqKey="qw2"
               isWhat="movie"
               videoData={topRateMovies}
               search={location.search ? location.search : ""}
-              sliderTitle={"님의 취향 저격 베스트 콘텐츠"}
+              sliderTitle={"취향 저격 베스트 콘텐츠"}
             />
           )}
           {recommendData && (
             <NowMovies
+              unqKey="qw3"
               isWhat="movie"
               videoData={recommendData}
               search={location.search ? location.search : ""}
@@ -167,12 +165,23 @@ function Home() {
           )}
           {recommendData2 && (
             <NowMovies
+              unqKey="qw4"
               isWhat="movie"
               videoData={recommendData2}
               search={location.search ? location.search : ""}
               sliderTitle={"워워드 수상 해외영화"}
             />
           )}
+          {upcommingData && (
+            <NowMovies
+              unqKey="qw5"
+              isWhat="movie"
+              videoData={upcommingData}
+              search={location.search ? location.search : ""}
+              sliderTitle={"곧 개봉할 영화"}
+            />
+          )}
+          <Footer />
         </>
       )}
     </Wrapper>

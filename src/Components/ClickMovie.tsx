@@ -253,6 +253,7 @@ interface IClickMovie {
   isWhat: string;
   search?: string;
   keyword?: string;
+  unqKey: string;
 }
 
 const opacityV: Variants = {
@@ -273,6 +274,7 @@ function ClickMovie({
   videoData,
   search,
   keyword,
+  unqKey,
 }: IClickMovie) {
   //console.log(videoData);
   const history = useHistory();
@@ -381,6 +383,23 @@ function ClickMovie({
   const clickedData = videoData.find((item) => item.id === +isSearch)
     ? videoData.find((item) => item.id === +isSearch)
     : detailData.data;
+
+  const teasearVideo = detailData.data?.videos.results.find(
+    (item) => item.type === "Teaser"
+  );
+  const trailerVideo = detailData.data?.videos.results.find(
+    (item) => item.type === "Trailer"
+  );
+
+  const openingVideo = detailData.data?.videos.results.find(
+    (item) => item.type === "Opening Credits"
+  );
+
+  const detailVideo = teasearVideo
+    ? teasearVideo
+    : trailerVideo
+    ? trailerVideo
+    : openingVideo;
   // console.log(clickedData);
   const mouseEnter = (event: any) => {
     setOver(true);
@@ -409,7 +428,8 @@ function ClickMovie({
       }
     }
   };
-  //console.log(moreMovie);
+
+  //  console.log(detailData.data?.videos.results[0].type);
   //console.log(clickedData?.poster_path);
   //console.log(clickedData);
   // console.log("무비ㅏ아이디임", movieId);
@@ -446,16 +466,16 @@ function ClickMovie({
                 exit="exit"
                 transition={{ delay: 0.3, duration: 0.5, type: "tween" }}
                 style={{ top: scrollY.get() + 100, zIndex: 4 }}
-                layoutId={isSearch}
+                layoutId={isSearch + unqKey + "1"}
               >
                 <>
-                  {detailData.data?.videos?.results[0] ? (
+                  {detailVideo ? (
                     <BigCover
                       key={clickedData.id + "az3"}
                       onMouseEnter={mouseEnter}
                       src={
                         over
-                          ? `https://www.youtube.com/embed/${detailData.data?.videos?.results[0]?.key}?autoplay=1&mute=0&controls=0&loop=1&start=10&playlist=${detailData.data?.videos?.results[0]?.key}&cc_lang_pref=ko&cc_load_policy=1&modestbranding=1`
+                          ? `https://www.youtube.com/embed/${detailVideo?.key}?autoplay=1&mute=0&controls=0&loop=1&start=0&playlist=${detailVideo?.key}&cc_lang_pref=ko&cc_load_policy=1&modestbranding=1`
                           : ""
                       }
                       allow="autoplay"
@@ -702,6 +722,7 @@ function ClickMovie({
                 ? locationMovie?.params?.movieId === isSearch
                 : false) ? (
                 <ClickMovie
+                  unqKey={unqKey}
                   key={clickedData?.id + "az40"}
                   bigVideoMatch={
                     similarMovieMatch ? similarMovieMatch : locationMovie
@@ -719,6 +740,7 @@ function ClickMovie({
                     ? locationTv?.params?.tvId === isSearch
                     : false)) && (
                   <ClickMovie
+                    unqKey={unqKey}
                     key={clickedData?.id + "az41"}
                     bigVideoMatch={similarTvMatch ? similarTvMatch : locationTv}
                     videoData={similarData.data?.results}
