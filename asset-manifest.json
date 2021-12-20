@@ -1,17 +1,17 @@
 {
   "files": {
-    "main.js": "//reactmaster/static/js/main.c2e3f311.chunk.js",
-    "main.js.map": "//reactmaster/static/js/main.c2e3f311.chunk.js.map",
-    "runtime-main.js": "//reactmaster/static/js/runtime-main.39cf4f39.js",
-    "runtime-main.js.map": "//reactmaster/static/js/runtime-main.39cf4f39.js.map",
-    "static/js/2.086ba0b9.chunk.js": "//reactmaster/static/js/2.086ba0b9.chunk.js",
-    "static/js/2.086ba0b9.chunk.js.map": "//reactmaster/static/js/2.086ba0b9.chunk.js.map",
-    "index.html": "//reactmaster/index.html",
-    "static/js/2.086ba0b9.chunk.js.LICENSE.txt": "//reactmaster/static/js/2.086ba0b9.chunk.js.LICENSE.txt"
+    "main.js": "/reactmaster/static/js/main.c2e3f311.chunk.js",
+    "main.js.map": "/reactmaster/static/js/main.c2e3f311.chunk.js.map",
+    "runtime-main.js": "/reactmaster/static/js/runtime-main.c4037ea3.js",
+    "runtime-main.js.map": "/reactmaster/static/js/runtime-main.c4037ea3.js.map",
+    "static/js/2.0e1245fd.chunk.js": "/reactmaster/static/js/2.0e1245fd.chunk.js",
+    "static/js/2.0e1245fd.chunk.js.map": "/reactmaster/static/js/2.0e1245fd.chunk.js.map",
+    "index.html": "/reactmaster/index.html",
+    "static/js/2.0e1245fd.chunk.js.LICENSE.txt": "/reactmaster/static/js/2.0e1245fd.chunk.js.LICENSE.txt"
   },
   "entrypoints": [
-    "static/js/runtime-main.39cf4f39.js",
-    "static/js/2.086ba0b9.chunk.js",
+    "static/js/runtime-main.c4037ea3.js",
+    "static/js/2.0e1245fd.chunk.js",
     "static/js/main.c2e3f311.chunk.js"
   ]
 }
