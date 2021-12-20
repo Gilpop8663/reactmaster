@@ -4,6 +4,7 @@ import { getSearchVideo, ISearchMovie } from "../api";
 import styled from "styled-components";
 import NowMovies from "../Components/NowMovies";
 import { useEffect } from "react";
+import Footer from "../Components/Footer";
 
 const Wrapper = styled.div`
   padding-top: 500px;
@@ -43,11 +44,7 @@ function Search() {
     () => getSearchVideo("movie", word),
     { refetchInterval: 500 }
   );
-  const searchData3 = useQuery<ISearchMovie>(
-    ["movies", "search3"],
-    () => getSearchVideo("person", word),
-    { refetchInterval: 500 }
-  );
+
   //console.log(location);
   //console.log(pramas);
   //console.log(location);
@@ -64,6 +61,7 @@ function Search() {
         <>
           {searchData.data?.results[0] && (
             <NowMovies
+              unqKey="se1"
               isWhat="tv"
               key={new URLSearchParams(location.search).get("keyword")}
               search={location.search ? location.search : ""}
@@ -73,6 +71,7 @@ function Search() {
           )}
           {searchData2.data?.results[0] && (
             <NowMovies
+              unqKey="se2"
               key={word + "456"}
               search={location.search ? location.search : ""}
               videoData={searchData2.data?.results}
@@ -80,6 +79,7 @@ function Search() {
               sliderTitle={`Movie 카테고리 : ${keyword}`}
             />
           )}
+          <Footer />
         </>
       )}
     </Wrapper>

@@ -34,7 +34,7 @@ const Box = styled(motion.div)<{ hover?: boolean; bgPhoto: string }>`
   background-image: ${(props) =>
     props.bgPhoto === `https://image.tmdb.org/t/p/w500/`
       ? `url(
-          "https://lh3.googleusercontent.com/proxy/iMS9Htm7Nxk5phLAi9872VBCPpw7CyJLhjYtyoG0K8pMfgEYi4aSkWo8l7_pz7pq-KkF_-_pvhPxurMR4RN6kOg"
+          "https://img.freepik.com/vector-gratis/signo-exclamacion-blanco-circulo-rojo-aislado-sobre-fondo-blanco_120819-332.jpg?size=338&ext=jpg"
         )`
       : `url(${props.bgPhoto})`};
   background-position: center center;
@@ -171,15 +171,21 @@ interface INowProps {
   sliderTitle?: string;
   search?: string;
   isWhat: string;
+  unqKey: string;
 }
 
-function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
+function NowMovies({
+  videoData,
+  sliderTitle,
+  search,
+  isWhat,
+  unqKey,
+}: INowProps) {
   const history = useHistory();
   const location = useLocation();
   //console.log(pathName);
   const [leaving, setLeaving] = useState(false);
   const [rowHover, setRowHover] = useState(false);
-  const [isSearch, setIsSearch] = useState(false);
   const rowMouseEnterLeave = () => {
     setRowHover((prev) => !prev);
   };
@@ -320,7 +326,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
               .slice(offset * index, offset * index + offset)
               .map((item) => (
                 <Box
-                  layoutId={item.id + ""}
+                  layoutId={item.id + unqKey}
                   onClick={() => onBoxClicked(item.id)}
                   hover={hover}
                   variants={boxVariants}
@@ -335,7 +341,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
                       : "",
                     "w500"
                   )}
-                  key={item.id}
+                  key={item.id + unqKey}
                 >
                   <Info key="movieInfo" variants={infoVariants}>
                     <h4 key="movieTitle">
@@ -349,7 +355,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
                 key="nextBox"
                 variants={boxVariants}
                 initial="normal"
-                layoutId={videoData[offset * index + offset + 1]?.id + ""}
+                layoutId={videoData[offset * index + offset + 1]?.id + unqKey}
                 transition={{ type: "tween", duration: 0.1 }}
                 bgPhoto={makeImageHelper(
                   videoData
@@ -363,7 +369,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
                 key="nextBox"
                 variants={boxVariants}
                 initial="normal"
-                layoutId={videoData[1].id + ""}
+                layoutId={videoData[1].id + unqKey}
                 transition={{ type: "tween", duration: 0.1 }}
                 bgPhoto={makeImageHelper(
                   videoData ? videoData[1]?.backdrop_path : "",
@@ -399,6 +405,7 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
             search={search}
             isWhat="movie"
             keyword={keyword ? keyword : undefined}
+            unqKey={unqKey}
           />
         )}
       {(locationTv.params.tvId
@@ -406,12 +413,13 @@ function NowMovies({ videoData, sliderTitle, search, isWhat }: INowProps) {
         : false || bigTvMatch) &&
         isWhat === "tv" && (
           <ClickMovie
-            key={"xvcmds"}
+            key={"xvcmdsss"}
             bigVideoMatch={bigTvMatch ? bigTvMatch : locationTv}
             videoData={videoData}
             search={search}
             isWhat="tv"
             keyword={keyword ? keyword : undefined}
+            unqKey={unqKey}
           />
         )}
     </>

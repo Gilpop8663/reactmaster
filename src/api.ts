@@ -238,9 +238,9 @@ export function getSearchVideo(format: string, id: string) {
   ).then((response) => response.json());
 }
 
-export function getTvOnAir() {
+export function getTvOnAir(page: number) {
   return fetch(
-    `${BASE_URL}/tv/on_the_air?api_key=${API_KEY}&language=en-US&page=1`
+    `${BASE_URL}/tv/on_the_air?api_key=${API_KEY}&language=en-US&page=${page}`
   ).then((response) => response.json());
 }
 
@@ -248,5 +248,33 @@ export function getSimilarData(format: string, id: string) {
   return fetch(
     `
     ${BASE_URL}/${format}/${id}/similar?api_key=${API_KEY}&language=en-US&page=1`
+  ).then((response) => response.json());
+}
+
+export function getUpcommingData(page: number) {
+  return fetch(
+    `
+   ${BASE_URL}/movie/upcoming?api_key=${API_KEY}&language=en-US&page=${page}`
+  ).then((response) => response.json());
+}
+
+export function getTopRatedTvData(page: number) {
+  return fetch(
+    `
+    ${BASE_URL}/tv/top_rated?api_key=${API_KEY}&language=en-US&page=${page}`
+  ).then((response) => response.json());
+}
+
+export function getPopularTvData(page: number) {
+  return fetch(
+    `
+   ${BASE_URL}/tv/popular?api_key=${API_KEY}&language=en-US&page=${page}`
+  ).then((response) => response.json());
+}
+
+export function getAiringTodayTvData(page: number) {
+  return fetch(
+    `
+    ${BASE_URL}/tv/airing_today?api_key=${API_KEY}&language=en-US&page=${page}`
   ).then((response) => response.json());
 }
