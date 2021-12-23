@@ -1,70 +1,41 @@
-# Getting Started with Create React App
+# 사이트를 만들면서 배우게 된 것
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Framer Motion
+typescript
+styled-components
+react-query
+react-router-dom
+react-helmet
 
-## Available Scripts
+##NomFlix
 
-In the project directory, you can run:
+이 프로젝트에서는 Framer Motion 을 이용하여 아름다운 애니메이션과 슬라이더. 모달과 같은 인터랙션을 구현하는 방법을 배우게 됩니다.
+또한 Api 를 useQuery를 이용해 Asynchronous (비동기식) 통신을 사용하였고 useLocation,usehistory 등으로 사용자가 어떻게 접근하는지에 따라서 데이터를 다르게 보여주었습니다.
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## 만들면서 어려웠던 점
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+https://hell-of-company-builder.tistory.com/237 - React,노마드코더 강의// 영화 사이트 만들면서 어려웠던 부분들 5가지
 
-### `npm test`
+1.데이터 페이지 1,2,3 합쳐서 보여주기
+2.tsx 반복 사용
+3.검색 query string 사용
+4.youtube api 사용
+5.리액트 컴포넌트 데이터 방식에 따라 prop을 설정하여 재사용하기
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
 
-### `npm run build`
+## 만들어 본 후기
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+재사용할 수 있는 컴포넌트를 생각해보는 기회가 되었고 , query string에 대해 알게 되었습니다. 그리고 호출한 Api 데이터를 어떻게 다뤄야 할지와 두 개의 비슷하지만 다른 데이터를 typescript에서 오류를 일으키지 않고 interface 를 사용하는 방법 등을 배우게 되었습니다. 사이트를 만들면서 실력이 크게 늘은 것 같습니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 스크린샷
 
-### `npm run eject`
+<img src="https://user-images.githubusercontent.com/80146176/147280775-baf213b5-2f76-4bcc-b2ea-ce5287b53d4d.png" width="auto" />
+<img src="https://user-images.githubusercontent.com/80146176/147284208-e826fa46-c54c-42ea-87fc-cae8764efa80.png" width="auto" />
+<img src="https://user-images.githubusercontent.com/80146176/147284258-ab5a6565-90e1-4d31-91d7-0fb17e411c79.png" width="auto" />
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 배포 사이트
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+https://gilpop8663.github.io/reactmaster/
