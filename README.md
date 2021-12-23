@@ -7,7 +7,7 @@ react-query
 react-router-dom
 react-helmet
 
-##NomFlix
+## NomFlix
 
 이 프로젝트에서는 Framer Motion 을 이용하여 아름다운 애니메이션과 슬라이더. 모달과 같은 인터랙션을 구현하는 방법을 배우게 됩니다.
 또한 Api 를 useQuery를 이용해 Asynchronous (비동기식) 통신을 사용하였고 useLocation,usehistory 등으로 사용자가 어떻게 접근하는지에 따라서 데이터를 다르게 보여주었습니다.
