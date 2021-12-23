@@ -31,7 +31,7 @@ https://hell-of-company-builder.tistory.com/237 - React,노마드코더 강의//
 
 ## 스크린샷
 
-<img src="https://user-images.githubusercontent.com/80146176/147280775-baf213b5-2f76-4bcc-b2ea-ce5287b53d4d.png" width="auto" />
+<img src="https://user-images.githubusercontent.com/80146176/147284354-96f4cb18-ce6e-4e52-b978-a59f13363754.png" width="auto" />
 <img src="https://user-images.githubusercontent.com/80146176/147284208-e826fa46-c54c-42ea-87fc-cae8764efa80.png" width="auto" />
 <img src="https://user-images.githubusercontent.com/80146176/147284258-ab5a6565-90e1-4d31-91d7-0fb17e411c79.png" width="auto" />
 
