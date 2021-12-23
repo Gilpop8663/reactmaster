@@ -625,6 +625,7 @@ function ClickMovie({
                           </DetailBox>
                         )}
                     </DetailGrid>
+
                     {similarData?.data?.results && (
                       <MoreBox key={clickedData.id + "az38"}>
                         {similarData.data?.results[9] &&
