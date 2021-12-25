@@ -30,6 +30,9 @@ const Icon = styled.a`
   justify-content: center;
   align-content: center;
   width: 30px;
+  &:hover {
+  }
+
   span {
     text-align: center;
   }
@@ -52,17 +55,27 @@ function Footer() {
     <Wrapper>
       <Copy>© 2021 - Kim Young Gil, All rights reserved.</Copy>
       <Icons>
-        <Icon href="https://github.com/Gilpop8663" target="_blank">
+        <Icon
+          href="https://github.com/Gilpop8663"
+          target="_blank"
+          title="깃 허브"
+        >
           <i className="fab fa-github"></i>
         </Icon>
         <Icon
           href="https://hell-of-company-builder.tistory.com/"
           target="_blank"
+          title="블로그"
         >
           <i className="fas fa-feather-alt"></i>
         </Icon>
-        <Icon href="https://nomadcoders.co/" target="_blank">
-          <NomarImg src="https://nomadcoders.co/m.svg" alt="" />
+        <Icon title="노마드코더" href="https://nomadcoders.co/" target="_blank">
+          <NomarImg
+            src="https://nomadcoders.co/m.svg"
+            alt=""
+            aria-labelledby="노마드코더"
+            aria-required="true"
+          />
         </Icon>
       </Icons>
     </Wrapper>
