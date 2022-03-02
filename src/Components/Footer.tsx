@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 const Wrapper = styled.div`
   width: 100vw;
@@ -60,14 +60,14 @@ function Footer() {
           target="_blank"
           title="깃 허브"
         >
-          <i className="fab fa-github"></i>
+          <i className="fab fa-github" />
         </Icon>
         <Icon
           href="https://hell-of-company-builder.tistory.com/"
           target="_blank"
           title="블로그"
         >
-          <i className="fas fa-feather-alt"></i>
+          <i className="fas fa-feather-alt" />
         </Icon>
         <Icon title="노마드코더" href="https://nomadcoders.co/" target="_blank">
           <NomarImg

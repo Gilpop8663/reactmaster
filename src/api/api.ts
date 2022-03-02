@@ -1,5 +1,5 @@
-const API_KEY = "8ada0ba81365b222c17dc83dc8b3e61d";
-const BASE_URL = "https://api.themoviedb.org/3";
+const API_KEY = '8ada0ba81365b222c17dc83dc8b3e61d';
+const BASE_URL = 'https://api.themoviedb.org/3';
 
 export interface IMovie {
   adult?: boolean;

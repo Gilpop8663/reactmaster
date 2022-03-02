@@ -3,12 +3,13 @@ import {
   useAnimation,
   useViewportScroll,
   Variants,
-} from "framer-motion";
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { useHistory, useRouteMatch } from "react-router";
-import { Link } from "react-router-dom";
-import styled from "styled-components";
+} from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { useHistory, useRouteMatch } from 'react-router';
+import { Link } from 'react-router-dom';
+import styled from 'styled-components';
+import { KEYWORD } from '../constant/constants';
 
 const Nav = styled(motion.div)`
   display: flex;
@@ -107,8 +108,8 @@ function Header() {
   const { register, handleSubmit } = useForm<IForm>();
   const history = useHistory();
   const [openSearch, setOpenSearch] = useState(false);
-  const homeMatch = useRouteMatch("/");
-  const tvMatch = useRouteMatch("/tv");
+  const homeMatch = useRouteMatch('/');
+  const tvMatch = useRouteMatch('/tv');
   const navAnimation = useAnimation();
   //   console.log(homeMatch, tvMatch);
   const { scrollY } = useViewportScroll();
@@ -118,9 +119,9 @@ function Header() {
   useEffect(() => {
     scrollY.onChange(() => {
       if (scrollY.get() > 80) {
-        navAnimation.start({ backgroundColor: "rgba(0,0,0,1)" });
+        navAnimation.start({ backgroundColor: 'rgba(0,0,0,1)' });
       } else {
-        navAnimation.start({ backgroundColor: "rgba(0,0,0,0)" });
+        navAnimation.start({ backgroundColor: 'rgba(0,0,0,0)' });
       }
     });
   }, [scrollY, navAnimation]);
@@ -129,7 +130,7 @@ function Header() {
     history.push(`/search?keyword=${data.keyword}`);
   };
   return (
-    <Nav initial={{ backgroundColor: "rgba(0,0,0,0)" }} animate={navAnimation}>
+    <Nav initial={{ backgroundColor: 'rgba(0,0,0,0)' }} animate={navAnimation}>
       <Col>
         <Logo
           variants={LogoVariants}
@@ -161,7 +162,7 @@ function Header() {
           <motion.svg
             onClick={toggleSearch}
             animate={{ x: openSearch ? -210 : 0 }}
-            transition={{ type: "linear" }}
+            transition={{ type: 'linear' }}
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -170,14 +171,14 @@ function Header() {
               fillRule="evenodd"
               d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
               clipRule="evenodd"
-            ></path>
+            />
           </motion.svg>
           <Input
-            {...register("keyword", { required: true, minLength: 2 })}
+            {...register(KEYWORD, { required: true, minLength: 2 })}
             placeholder="Search for movie or tv shows..."
             animate={{ scaleX: openSearch ? 1 : 0 }}
-            transition={{ type: "linear" }}
-          ></Input>
+            transition={{ type: 'linear' }}
+          />
         </Search>
       </Col>
     </Nav>

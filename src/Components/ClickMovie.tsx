@@ -3,11 +3,11 @@ import {
   motion,
   useViewportScroll,
   Variants,
-} from "framer-motion";
-import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
-import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
-import styled from "styled-components";
+} from 'framer-motion';
+import { useEffect, useState } from 'react';
+import { useQuery } from 'react-query';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import styled from 'styled-components';
 import {
   getSimilarData,
   getVideoCredit,
@@ -16,8 +16,9 @@ import {
   IMovie,
   ISimilarProps,
   IVideoCredit,
-} from "../api";
-import { makeImageHelper } from "../utils";
+} from '../api/api';
+import { CATEGORY_MOVIE, CATEGORY_TV } from '../constant/constants';
+import { makeImageHelper } from '../utils/utils';
 
 const Loader = styled.div`
   width: 100%;
@@ -268,6 +269,10 @@ const opacityV: Variants = {
   },
 };
 
+const Container = styled.div``;
+
+const MapWrapper = styled.div``;
+
 function ClickMovie({
   bigVideoMatch,
   isWhat,
@@ -287,14 +292,16 @@ function ClickMovie({
   // console.log(history);
   const location = useLocation();
   const movieKeyword: string = new URLSearchParams(location.search).get(
-    "movies"
+    'movies'
   )
-    ? String(new URLSearchParams(location.search).get("movies"))
-    : "";
+    ? String(new URLSearchParams(location.search).get('movies'))
+    : '';
 
-  const tvKeyword: string = new URLSearchParams(location.search).get("tv")
-    ? String(new URLSearchParams(location.search).get("tv"))
-    : "";
+  const tvKeyword: string = new URLSearchParams(location.search).get(
+    CATEGORY_TV
+  )
+    ? String(new URLSearchParams(location.search).get(CATEGORY_TV))
+    : '';
 
   const searchKeyword = movieKeyword ? movieKeyword : tvKeyword;
 
@@ -319,10 +326,10 @@ function ClickMovie({
   const onOverlayClicked = () => {
     setOver(false);
     if (!search) {
-      if (isWhat === "movie") {
-        history.push("/");
-      } else if (isWhat === "tv") {
-        history.push("/tv");
+      if (isWhat === CATEGORY_MOVIE) {
+        history.push('/');
+      } else if (isWhat === CATEGORY_TV) {
+        history.push('/tv');
       }
     } else {
       history.push(`${backUrl}`);
@@ -330,30 +337,14 @@ function ClickMovie({
     //history.push(location);
   };
 
-  const creditData = useQuery<IVideoCredit>(["video", "credit"], () =>
+  const creditData = useQuery<IVideoCredit>(['video', 'credit'], () =>
     getVideoCredit(isWhat, isSearch)
   );
 
-  const similarData = useQuery<ISimilarProps>(["video", "similar"], () =>
+  const similarData = useQuery<ISimilarProps>(['video', 'similar'], () =>
     getSimilarData(isWhat, isSearch)
   );
 
-  //console.log(similarData.data?.results);
-  //console.log(clicked);
-  // const { data } = useQuery<IGetVideoProps>(["movies", "video"], () =>
-  //   getVideo(bigVideoMatch=.params.movieId)
-  // );
-
-  //console.log(similarMovieData);
-  // console.log(isSearch, creditData.data);
-  //console.log(similarData.data?.results[0].id);
-  // const clickedData =
-  //   bigVideoMatch=params.movieId &&
-  //   movieData.find((item) => item.id === +bigVideoMatch=params.movieId)
-  //     ? movieData.find((item) => item.id === +bigVideoMatch=params.movieId)
-  //     : similarData?.data?.results?.find(
-  //         (item) => item.id === +bigVideoMatch=params.movieId
-  //       );
   const similarMovieMatch = useRouteMatch<{ movieId: string }>(
     !search ? `/movies/:movieId` : `undefined`
   );
@@ -364,35 +355,33 @@ function ClickMovie({
 
   const locationTv = {
     params: {
-      tvId: new URLSearchParams(location.search).get("tv"),
+      tvId: new URLSearchParams(location.search).get(CATEGORY_TV),
     },
   };
-  // console.log(locationTv);
   const locationMovie = {
     params: {
-      movieId: new URLSearchParams(location.search).get("movies"),
+      movieId: new URLSearchParams(location.search).get('movies'),
     },
   };
 
   const similarMatch = similarMovieMatch ? similarMovieMatch : similarTvMatch;
 
-  const detailData = useQuery<IGetVideoDetail>(["videos", "detail"], () =>
+  const detailData = useQuery<IGetVideoDetail>(['videos', 'detail'], () =>
     getVideoDetail(isWhat, isSearch)
   );
-  console.log(isSearch);
   const clickedData = videoData.find((item) => item.id === +isSearch)
     ? videoData.find((item) => item.id === +isSearch)
     : detailData.data;
 
   const teasearVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Teaser"
+    (item) => item.type === 'Teaser'
   );
   const trailerVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Trailer"
+    (item) => item.type === 'Trailer'
   );
 
   const openingVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Opening Credits"
+    (item) => item.type === 'Opening Credits'
   );
 
   const detailVideo = teasearVideo
@@ -400,50 +389,30 @@ function ClickMovie({
     : trailerVideo
     ? trailerVideo
     : openingVideo;
-  // console.log(clickedData);
   const mouseEnter = (event: any) => {
     setOver(true);
   };
-  //console.log(similarMatch, similarMovieMatch, similarTvMatch);
-  //console.log(similarMovieMatch, similarMatch);
-  //console.log(similarTvMatch);
-  //console.log(data, isLoading);
-  //console.log(detailData.data);
-  //console.log(similarData.data?.results[0]);
-  //console.log(bigVideoMatch=params.movieId);
+
   const onBoxClicked = (id: number) => {
     setOver(false);
     setClicked(true);
     if (!search) {
-      if (isWhat === "movie") {
+      if (isWhat === CATEGORY_MOVIE) {
         history.push(`/movies/${id}`);
-      } else if (isWhat === "tv") {
+      } else if (isWhat === CATEGORY_TV) {
         history.push(`/tv/${id}`);
       }
     } else if (search) {
-      if (isWhat === "movie") {
+      if (isWhat === CATEGORY_MOVIE) {
         history.push(`${location.pathname}?keyword=${keyword}&movies=${id}`);
-      } else if (isWhat === "tv") {
+      } else if (isWhat === CATEGORY_TV) {
         history.push(`${location.pathname}?keyword=${keyword}&tv=${id}`);
       }
     }
   };
 
-  //  console.log(detailData.data?.videos.results[0].type);
-  //console.log(clickedData?.poster_path);
-  //console.log(clickedData);
-  // console.log("무비ㅏ아이디임", movieId);
-  // console.log(
-  //   "시밀러 데이터 :",
-  //   similarData.data?.results,
-  //   "클릭임:",
-  //   clicked,
-  //   "시밀러맷치",
-  //   similarMatch
-  // );
-  //console.log(clickedData);
   return (
-    <>
+    <Container>
       {detailData.isLoading ? (
         <Loader>Loading...</Loader>
       ) : (
@@ -451,32 +420,32 @@ function ClickMovie({
           <AnimatePresence>
             {clickedData && (
               <Overlay
-                key={clickedData.id + "az1"}
+                key={clickedData.id + 'az1'}
                 onClick={onOverlayClicked}
                 exit={{ opacity: 0, zIndex: 0 }}
                 animate={{ opacity: 1, zIndex: 2 }}
-              ></Overlay>
+              />
             )}
             {clickedData && (
               <BigMovie
-                key={clickedData.id + "az2"}
+                key={clickedData.id + 'az2'}
                 variants={opacityV}
                 initial="entry"
                 animate="normal"
                 exit="exit"
-                transition={{ delay: 0.3, duration: 0.5, type: "tween" }}
+                transition={{ delay: 0.3, duration: 0.5, type: 'tween' }}
                 style={{ top: scrollY.get() + 100, zIndex: 4 }}
-                layoutId={isSearch + unqKey + "1"}
+                layoutId={isSearch + unqKey + '1'}
               >
                 <>
                   {detailVideo ? (
                     <BigCover
-                      key={clickedData.id + "az3"}
+                      key={clickedData.id + 'az3'}
                       onMouseEnter={mouseEnter}
                       src={
                         over
                           ? `https://www.youtube.com/embed/${detailVideo?.key}?autoplay=1&mute=0&controls=0&loop=1&start=0&playlist=${detailVideo?.key}&cc_lang_pref=ko&cc_load_policy=1&modestbranding=1`
-                          : ""
+                          : ''
                       }
                       allow="autoplay"
                       frameBorder={0}
@@ -486,93 +455,91 @@ function ClickMovie({
                           ? clickedData.backdrop_path
                           : clickedData.poster_path
                           ? clickedData.poster_path
-                          : ""
+                          : ''
                       )}
-                    ></BigCover>
+                    />
                   ) : (
                     <BigCover
-                      key={clickedData.id + "az4"}
+                      key={clickedData.id + 'az4'}
                       userWidth={window.innerWidth}
                       bgPhoto={makeImageHelper(
                         clickedData.backdrop_path
                           ? clickedData.backdrop_path
                           : clickedData.poster_path
                           ? clickedData.poster_path
-                          : ""
+                          : ''
                       )}
-                    ></BigCover>
+                    />
                   )}
-                  <DisableCover
-                    key={clickedData.id + "az5"}
-                    isOver={over}
-                  ></DisableCover>
-                  <BigContainer key={clickedData.id + "az6"}>
-                    <BigTitle key={clickedData.id + "az7"}>
-                      {isWhat === "movie"
+                  <DisableCover key={clickedData.id + 'az5'} isOver={over} />
+                  <BigContainer key={clickedData.id + 'az6'}>
+                    <BigTitle key={clickedData.id + 'az7'}>
+                      {isWhat === CATEGORY_MOVIE
                         ? clickedData.title
                         : clickedData.name}
                     </BigTitle>
-                    <UserBox key={clickedData.id + "az8"}>
-                      <Playbox key={clickedData.id + "az9"}>
+                    <UserBox key={clickedData.id + 'az8'}>
+                      <Playbox key={clickedData.id + 'az9'}>
                         <i
-                          key={clickedData.id + "a10"}
+                          key={clickedData.id + 'a10'}
                           className="fas fa-play"
-                        ></i>
-                        <span key={clickedData.id + "az11"}> 재생</span>
+                        />
+                        <span key={clickedData.id + 'az11'}> 재생</span>
                       </Playbox>
-                      <PlayCircle key={clickedData.id + "az12"}>
+                      <PlayCircle key={clickedData.id + 'az12'}>
                         <i
-                          key={clickedData.id + "az13"}
+                          key={clickedData.id + 'az13'}
                           className="fas fa-plus"
-                        ></i>
+                        />
                       </PlayCircle>
-                      <PlayCircle key={clickedData.id + "az14"}>
+                      <PlayCircle key={clickedData.id + 'az14'}>
                         <i
-                          key={clickedData.id + "az15"}
+                          key={clickedData.id + 'az15'}
                           className="far fa-thumbs-up"
-                        ></i>
+                        />
                       </PlayCircle>
-                      <PlayCircle key={clickedData.id + "az16"}>
+                      <PlayCircle key={clickedData.id + 'az16'}>
                         <i
-                          key={clickedData.id + "az17"}
+                          key={clickedData.id + 'az17'}
                           className="far fa-thumbs-down"
-                        ></i>
+                        />
                       </PlayCircle>
                     </UserBox>
-                    <DetailGrid key={clickedData.id + "az18"}>
-                      <DetailBox key={clickedData.id + "az19"}>
-                        <InfoBox key={clickedData.id + "az20"}>
-                          <MoiveAverage key={clickedData.id + "az21"}>
+                    <DetailGrid key={clickedData.id + 'az18'}>
+                      <DetailBox key={clickedData.id + 'az19'}>
+                        <InfoBox key={clickedData.id + 'az20'}>
+                          <MoiveAverage key={clickedData.id + 'az21'}>
                             {clickedData.vote_average
                               ? `${(clickedData.vote_average * 10).toFixed(
                                   0
                                 )}% 일치`
-                              : ""}
+                              : ''}
                           </MoiveAverage>
-                          <MovieInfoTop key={clickedData.id + "az22"}>
-                            {isWhat === "movie" && clickedData?.release_date
+                          <MovieInfoTop key={clickedData.id + 'az22'}>
+                            {isWhat === CATEGORY_MOVIE &&
+                            clickedData?.release_date
                               ? clickedData?.release_date.slice(0, 4)
                               : clickedData.first_air_date?.slice(0, 4)}
                             년
                           </MovieInfoTop>
-                          <MovieInfoTop key={clickedData.id + "az23"}>
+                          <MovieInfoTop key={clickedData.id + 'az23'}>
                             {detailData.data?.runtime === 0 ||
                             detailData.data?.runtime === null ||
                             detailData.data?.runtime === undefined
-                              ? ""
+                              ? ''
                               : `${detailData.data?.runtime}분`}
                           </MovieInfoTop>
                         </InfoBox>
-                        <BigOverview key={clickedData.id + "az24"}>
+                        <BigOverview key={clickedData.id + 'az24'}>
                           {clickedData.overview}
                         </BigOverview>
                       </DetailBox>
                       {detailData.data?.genres &&
                         creditData.data?.crew &&
                         creditData.data?.cast && (
-                          <DetailBox key={clickedData.id + "az25"}>
-                            <InfoBox key={clickedData.id + "az26"}>
-                              <InfoSpan key={clickedData.id + "az27"}>
+                          <DetailBox key={clickedData.id + 'az25'}>
+                            <InfoBox key={clickedData.id + 'az26'}>
+                              <InfoSpan key={clickedData.id + 'az27'}>
                                 장르:
                               </InfoSpan>
                               {detailData.data?.genres?.map((item: any) => (
@@ -582,44 +549,44 @@ function ClickMovie({
                               ))}
                             </InfoBox>
 
-                            <InfoBox key={clickedData.id + "az28"}>
-                              <InfoSpan key={clickedData.id + "az29"}>
+                            <InfoBox key={clickedData.id + 'az28'}>
+                              <InfoSpan key={clickedData.id + 'az29'}>
                                 출연진:
                               </InfoSpan>
-                              <MovieInfo key={clickedData.id + "az30"}>
+                              <MovieInfo key={clickedData.id + 'az30'}>
                                 {creditData.data?.cast[0]
                                   ? `${creditData.data?.cast[0].name},`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
-                              <MovieInfo key={clickedData.id + "az31"}>
+                              <MovieInfo key={clickedData.id + 'az31'}>
                                 {creditData.data?.cast[1]
                                   ? `${creditData.data?.cast[1].name},`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
-                              <MovieInfo key={clickedData.id + "az32"}>
+                              <MovieInfo key={clickedData.id + 'az32'}>
                                 {creditData.data?.cast[2]
                                   ? `${creditData.data?.cast[2].name}`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
                             </InfoBox>
-                            <InfoBox key={clickedData.id + "az33"}>
-                              <InfoSpan key={clickedData.id + "az34"}>
+                            <InfoBox key={clickedData.id + 'az33'}>
+                              <InfoSpan key={clickedData.id + 'az34'}>
                                 크리에이터:
                               </InfoSpan>
-                              <MovieInfo key={clickedData.id + "az35"}>
+                              <MovieInfo key={clickedData.id + 'az35'}>
                                 {creditData.data?.crew[0]
                                   ? `${creditData.data?.crew[0].name},`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
-                              <MovieInfo key={clickedData.id + "az36"}>
+                              <MovieInfo key={clickedData.id + 'az36'}>
                                 {creditData.data?.crew[1]
                                   ? `${creditData.data?.crew[1].name},`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
-                              <MovieInfo key={clickedData.id + "az37"}>
+                              <MovieInfo key={clickedData.id + 'az37'}>
                                 {creditData.data?.crew[2]
                                   ? `${creditData.data?.crew[2].name}`
-                                  : ""}
+                                  : ''}
                               </MovieInfo>
                             </InfoBox>
                           </DetailBox>
@@ -627,11 +594,11 @@ function ClickMovie({
                     </DetailGrid>
 
                     {similarData?.data?.results && (
-                      <MoreBox key={clickedData.id + "az38"}>
+                      <MoreBox key={clickedData.id + 'az38'}>
                         {similarData.data?.results[9] &&
                           Array.from({ length: 9 }, (v, i) => i).map((item) => (
                             <MoreMovie
-                              key={similarData?.data?.results[item].id + "1as1"}
+                              key={similarData?.data?.results[item].id + '1as1'}
                               onClick={() =>
                                 onBoxClicked(
                                   similarData?.data
@@ -645,7 +612,7 @@ function ClickMovie({
                                   <MoreCover
                                     key={
                                       similarData?.data?.results[item].id +
-                                      "1as2"
+                                      '1as2'
                                     }
                                     bgPhoto={makeImageHelper(
                                       similarData.data?.results[item]
@@ -655,25 +622,25 @@ function ClickMovie({
                                         : similarData.data.results[item]
                                             .poster_path
                                     )}
-                                  ></MoreCover>
+                                  />
                                 )}
                               <MoreInfoBox
                                 key={
-                                  similarData?.data?.results[item].id + "1as3"
+                                  similarData?.data?.results[item].id + '1as3'
                                 }
                               >
                                 <MoreTitle
                                   key={
-                                    similarData?.data?.results[item].id + "1as4"
+                                    similarData?.data?.results[item].id + '1as4'
                                   }
                                 >
-                                  {isWhat === "movie"
+                                  {isWhat === CATEGORY_MOVIE
                                     ? similarData.data?.results[item].title
                                     : similarData.data?.results[item].name}
                                 </MoreTitle>
                                 <MoiveAverage
                                   key={
-                                    similarData?.data?.results[item].id + "1as5"
+                                    similarData?.data?.results[item].id + '1as5'
                                   }
                                 >
                                   {similarData.data?.results[item].vote_average
@@ -681,18 +648,18 @@ function ClickMovie({
                                         similarData.data?.results[item]
                                           .vote_average * 10
                                       ).toFixed(0)}%일치`
-                                    : ""}
+                                    : ''}
                                 </MoiveAverage>
                                 <MoreInfo
                                   key={
-                                    similarData?.data?.results[item].id + "1as6"
+                                    similarData?.data?.results[item].id + '1as6'
                                   }
-                                ></MoreInfo>
+                                />
                                 {similarData.data?.results[item].overview && (
                                   <MoreInfo
                                     key={
                                       similarData?.data?.results[item].id +
-                                      "1as7"
+                                      '1as7'
                                     }
                                   >
                                     {similarData.data?.results[item].overview
@@ -715,7 +682,7 @@ function ClickMovie({
             )}
             )
           </AnimatePresence>
-          <>
+          <MapWrapper>
             {similarData.data?.results &&
               clicked &&
               (similarMovieMatch ||
@@ -724,12 +691,12 @@ function ClickMovie({
                 : false) ? (
                 <ClickMovie
                   unqKey={unqKey}
-                  key={clickedData?.id + "az40"}
+                  key={clickedData?.id + 'az40'}
                   bigVideoMatch={
                     similarMovieMatch ? similarMovieMatch : locationMovie
                   }
                   videoData={similarData.data?.results}
-                  isWhat={"movie"}
+                  isWhat={CATEGORY_MOVIE}
                   search={search}
                   keyword={keyword ? keyword : undefined}
                 />
@@ -742,20 +709,20 @@ function ClickMovie({
                     : false)) && (
                   <ClickMovie
                     unqKey={unqKey}
-                    key={clickedData?.id + "az41"}
+                    key={clickedData?.id + 'az41'}
                     bigVideoMatch={similarTvMatch ? similarTvMatch : locationTv}
                     videoData={similarData.data?.results}
-                    isWhat={"tv"}
+                    isWhat={CATEGORY_TV}
                     search={search}
                     keyword={keyword ? keyword : undefined}
                   />
                 )
               ))}
-          </>
+          </MapWrapper>
           )
         </>
       )}
-    </>
+    </Container>
   );
 }
 

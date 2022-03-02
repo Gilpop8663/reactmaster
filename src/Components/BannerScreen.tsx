@@ -1,9 +1,15 @@
-import { motion } from "framer-motion";
-import { useState } from "react";
-import { useQuery } from "react-query";
-import styled from "styled-components";
-import { getVideoDetail, IGetVideoDetail, IGetVideosProps } from "../api";
-import { makeImageHelper } from "../utils";
+import { motion } from 'framer-motion';
+import { useState } from 'react';
+import { useQuery } from 'react-query';
+import styled from 'styled-components';
+import { getVideoDetail, IGetVideoDetail, IGetVideosProps } from '../api/api';
+import {
+  CATEGORY_MOVIE,
+  CATEGORY_TV,
+  DETAIL,
+  VIDEO,
+} from '../constant/constants';
+import { makeImageHelper } from '../utils/utils';
 
 const Banner = styled(motion.iframe)<{
   bgPhoto: string;
@@ -51,18 +57,18 @@ interface IBanner {
 function BannerScreen({ videoData, isWhat }: IBanner) {
   const [over, setOver] = useState(false);
 
-  const detailData = useQuery<IGetVideoDetail>(["video", "detail"], () =>
-    getVideoDetail("movie", videoData.results[0].id + "")
+  const detailData = useQuery<IGetVideoDetail>([VIDEO, DETAIL], () =>
+    getVideoDetail(CATEGORY_MOVIE, videoData.results[0].id + '')
   );
   //console.log(detailData.data?.videos.results);
   const teasearVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Teaser"
+    (item) => item.type === 'Teaser'
   );
   const trailerVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Trailer"
+    (item) => item.type === 'Trailer'
   );
   const openingVideo = detailData.data?.videos.results.find(
-    (item) => item.type === "Opening Credits"
+    (item) => item.type === 'Opening Credits'
   );
 
   const detailVideo = teasearVideo
@@ -70,7 +76,7 @@ function BannerScreen({ videoData, isWhat }: IBanner) {
     : trailerVideo
     ? trailerVideo
     : openingVideo;
-  const mouseEnter = (event: any) => {
+  const mouseEnter = () => {
     setOver(true);
   };
   const mouseLeave = () => {
@@ -80,14 +86,14 @@ function BannerScreen({ videoData, isWhat }: IBanner) {
     <>
       {detailVideo ? (
         <Banner
-          key={detailVideo.key + "a1q"}
+          key={detailVideo.key + 'a1q'}
           onMouseEnter={mouseEnter}
           onMouseLeave={mouseLeave}
           over={over}
           src={
             over
               ? `https://www.youtube.com/embed/${detailVideo.key}?mute=0&autoplay=1&controls=0&loop=1&start=0&playlist=${detailVideo?.key}&cc_lang_pref=ko&cc_load_policy=1&modestbranding=1`
-              : ""
+              : ''
           }
           allow="autoplay"
           frameBorder={0}
@@ -97,27 +103,27 @@ function BannerScreen({ videoData, isWhat }: IBanner) {
               ? videoData.results[0].backdrop_path
               : videoData.results[0].poster_path
               ? videoData.results[0].poster_path
-              : ""
+              : ''
           )}
-        ></Banner>
+        />
       ) : (
         <Banner
-          key={videoData.results[0].backdrop_path + "12a"}
+          key={videoData.results[0].backdrop_path + '12a'}
           userWidth={window.innerWidth}
           bgPhoto={makeImageHelper(
             videoData.results[0].backdrop_path
               ? videoData.results[0].backdrop_path
               : videoData.results[0].poster_path
               ? videoData.results[0].poster_path
-              : ""
+              : ''
           )}
-        ></Banner>
+        />
       )}
       {!over && (
         <Wrapper>
           <Title>
-            {isWhat === "movie" && videoData.results[0].title}
-            {isWhat === "tv" && videoData.results[0].name}
+            {isWhat === CATEGORY_MOVIE && videoData.results[0].title}
+            {isWhat === CATEGORY_TV && videoData.results[0].name}
           </Title>
           <Overview>{videoData.results[0].overview}</Overview>
         </Wrapper>

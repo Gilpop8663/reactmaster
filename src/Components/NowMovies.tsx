@@ -1,10 +1,17 @@
-import { AnimatePresence, motion, Variants } from "framer-motion";
-import React, { useState } from "react";
-import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
-import styled from "styled-components";
-import { IMovie } from "../api";
-import { makeImageHelper } from "../utils";
-import ClickMovie from "./ClickMovie";
+import { AnimatePresence, motion, Variants } from 'framer-motion';
+import React, { useState } from 'react';
+import { useHistory, useLocation, useRouteMatch } from 'react-router-dom';
+import styled from 'styled-components';
+import { IMovie } from '../api/api';
+import {
+  CATEGORY_MOVIE,
+  CATEGORY_TV,
+  DEFAULT_IMAGE,
+  KEYWORD,
+  MOIVES,
+} from '../constant/constants';
+import { makeImageHelper } from '../utils/utils';
+import ClickMovie from './ClickMovie';
 
 const Slider = styled.div`
   position: relative;
@@ -17,13 +24,13 @@ const Row = styled(motion.div)<{ isFirst: number; hover: boolean }>`
   display: grid;
   grid-template-columns: ${(props) =>
     props.hover === false
-      ? "repeat(6, 1fr) 0.2fr"
-      : "0.2fr repeat(6, 1fr) 0.2fr"};
+      ? 'repeat(6, 1fr) 0.2fr'
+      : '0.2fr repeat(6, 1fr) 0.2fr'};
   gap: 5px;
   width: 100%;
   margin-top: 16px;
   padding: ${(props) =>
-    props.hover === false ? "0px 0px 0px 65px" : "0px 0px 0px 0px"};
+    props.hover === false ? '0px 0px 0px 65px' : '0px 0px 0px 0px'};
   position: absolute;
 `;
 
@@ -33,9 +40,7 @@ const Box = styled(motion.div)<{ hover?: boolean; bgPhoto: string }>`
   font-size: 66px;
   background-image: ${(props) =>
     props.bgPhoto === `https://image.tmdb.org/t/p/w500/`
-      ? `url(
-          "https://img.freepik.com/vector-gratis/signo-exclamacion-blanco-circulo-rojo-aislado-sobre-fondo-blanco_120819-332.jpg?size=338&ext=jpg"
-        )`
+      ? `url(${DEFAULT_IMAGE})`
       : `url(${props.bgPhoto})`};
   background-position: center center;
   background-size: cover;
@@ -45,19 +50,19 @@ const Box = styled(motion.div)<{ hover?: boolean; bgPhoto: string }>`
   }
   &:first-child {
     transform-origin: ${(props) =>
-      props.hover ? "center left" : "center left"};
+      props.hover ? 'center left' : 'center left'};
   }
   &:nth-child(2) {
     transform-origin: ${(props) =>
-      props.hover ? "center left" : "center center"};
+      props.hover ? 'center left' : 'center center'};
   }
   &:nth-child(6) {
     transform-origin: ${(props) =>
-      props.hover ? "center center" : "center right"};
+      props.hover ? 'center center' : 'center right'};
   }
   &:nth-child(7) {
     transform-origin: ${(props) =>
-      props.hover ? "center right" : "center center"};
+      props.hover ? 'center right' : 'center center'};
   }
 `;
 
@@ -133,31 +138,31 @@ const rowVariants: Variants = {
 };
 
 const boxVariants: Variants = {
-  normal: { scale: 1, transition: { type: "tween" } },
+  normal: { scale: 1, transition: { type: 'tween' } },
   hover: {
     scale: 1.3,
     y: -50,
-    transition: { delay: 0.5, duration: 0.3, type: "tween" },
+    transition: { delay: 0.5, duration: 0.3, type: 'tween' },
   },
 };
 
 const infoVariants: Variants = {
   hover: {
     opacity: 1,
-    transition: { delay: 0.5, duration: 0.1, type: "tween" },
+    transition: { delay: 0.5, duration: 0.1, type: 'tween' },
   },
 };
 
 const ArrowVariants: Variants = {
   btnNormal: {
-    backgroundColor: "rgba(0,0,0,0.5)",
-    fontSize: "20px",
-    color: "rgba(255,255,255,0)",
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    fontSize: '20px',
+    color: 'rgba(255,255,255,0)',
   },
   btnHover: {
-    backgroundColor: "rgba(0, 0, 0, 0.9)",
-    fontSize: "30px",
-    color: "rgba(255,255,255,1)",
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    fontSize: '30px',
+    color: 'rgba(255,255,255,1)',
   },
   exit: {
     opacity: 0,
@@ -212,49 +217,43 @@ function NowMovies({
       setBack(true);
       toggleLeaving();
       setHover(true);
-      console.log("맥스인덱스 : ", maxIndex, "인덱스 : ", index);
       setIndex((prev) => (index === maxIndex ? 0 : prev + 1));
     }
   };
-  let keyword = new URLSearchParams(location.search).get("keyword");
+  let keyword = new URLSearchParams(location.search).get(KEYWORD);
   const onBoxClicked = (id: number) => {
-    //console.log(id);
     if (!search) {
-      if (isWhat === "movie") {
+      if (isWhat === CATEGORY_MOVIE) {
         history.push(`/movies/${id}`);
-      } else if (isWhat === "tv") {
+      } else if (isWhat === CATEGORY_TV) {
         history.push(`/tv/${id}`);
       }
     } else if (search) {
-      if (isWhat === "movie") {
+      if (isWhat === CATEGORY_MOVIE) {
         history.push(`/search?keyword=${keyword}&movies=${id}`);
-      } else if (isWhat === "tv") {
+      } else if (isWhat === CATEGORY_TV) {
         history.push(`/search?keyword=${keyword}&tv=${id}`);
       }
     }
   };
-  // console.log(isSearch);
   const bigMovieMatch = useRouteMatch<{ movieId?: string }>(
-    !search ? `/movies/:movieId` : "undefined"
+    !search ? `/movies/:movieId` : 'undefined'
   );
 
   const bigTvMatch = useRouteMatch<{ tvId?: string }>(
-    !search ? `/tv/:tvId` : "undefined"
+    !search ? `/tv/:tvId` : 'undefined'
   );
 
   const locationTv = {
     params: {
-      tvId: new URLSearchParams(location.search).get("tv"),
+      tvId: new URLSearchParams(location.search).get(CATEGORY_TV),
     },
   };
-  // console.log(locationTv);
   const locationMovie = {
     params: {
-      movieId: new URLSearchParams(location.search).get("movies"),
+      movieId: new URLSearchParams(location.search).get(MOIVES),
     },
   };
-
-  //console.log(locationTv, locationMovie);
 
   return (
     <>
@@ -268,13 +267,11 @@ function NowMovies({
           custom={back}
         >
           <ArchiveContainer>
-            <Archive key={sliderTitle + "cvxbfg"}>{sliderTitle}</Archive>
+            <Archive key={sliderTitle + 'cvxbfg'}>{sliderTitle}</Archive>
             <IndexBoxs>
               {rowHover &&
                 Array.from({ length: maxIndex + 1 }, (v, i) => i).map(
-                  (item) => (
-                    <IndexBox key={item} index={item === index}></IndexBox>
-                  )
+                  (item) => <IndexBox key={item} index={item === index} />
                 )}
             </IndexBoxs>
           </ArchiveContainer>
@@ -286,10 +283,10 @@ function NowMovies({
               initial="btnNormal"
               animate="btnNormal"
               exit="btnNormal"
-              transition={{ type: "tween", duration: 0.2 }}
+              transition={{ type: 'tween', duration: 0.2 }}
               whileHover="btnHover"
             >
-              <motion.i key="leftI" className="fas fa-chevron-left"></motion.i>
+              <motion.i key="leftI" className="fas fa-chevron-left" />
             </ArrowBtn>
           )}
           <Row
@@ -301,14 +298,14 @@ function NowMovies({
             animate="visible"
             initial="hidden"
             exit="exit"
-            transition={{ type: "easy-in-out", duration: 0.5 }}
+            transition={{ type: 'easy-in-out', duration: 0.5 }}
           >
             {hover === true ? (
               <Box
                 key="prevBox"
                 variants={boxVariants}
                 initial={false}
-                transition={{ type: "tween", duration: 0.1 }}
+                transition={{ type: 'tween', duration: 0.1 }}
                 bgPhoto={makeImageHelper(
                   videoData
                     ? index === 0
@@ -316,10 +313,10 @@ function NowMovies({
                           Math.floor((videoData.length - 1) / 6) * offset
                         ]?.backdrop_path
                       : videoData[offset * index]?.backdrop_path
-                    : "",
-                  "w500"
+                    : '',
+                  'w500'
                 )}
-              ></Box>
+              />
             ) : null}
             {videoData
               .slice(1)
@@ -332,20 +329,20 @@ function NowMovies({
                   variants={boxVariants}
                   initial="normal"
                   whileHover="hover"
-                  transition={{ type: "tween", duration: 0.1 }}
+                  transition={{ type: 'tween', duration: 0.1 }}
                   bgPhoto={makeImageHelper(
                     item.backdrop_path
                       ? item.backdrop_path
                       : item.poster_path
                       ? item.poster_path
-                      : "",
-                    "w500"
+                      : '',
+                    'w500'
                   )}
                   key={item.id + unqKey}
                 >
                   <Info key="movieInfo" variants={infoVariants}>
                     <h4 key="movieTitle">
-                      {isWhat === "movie" ? item.title : item.name}
+                      {isWhat === CATEGORY_MOVIE ? item.title : item.name}
                     </h4>
                   </Info>
                 </Box>
@@ -356,26 +353,26 @@ function NowMovies({
                 variants={boxVariants}
                 initial="normal"
                 layoutId={videoData[offset * index + offset + 1]?.id + unqKey}
-                transition={{ type: "tween", duration: 0.1 }}
+                transition={{ type: 'tween', duration: 0.1 }}
                 bgPhoto={makeImageHelper(
                   videoData
                     ? videoData[offset * index + offset + 1]?.backdrop_path
-                    : "",
-                  "w500"
+                    : '',
+                  'w500'
                 )}
-              ></Box>
+              />
             ) : (
               <Box
                 key="nextBox"
                 variants={boxVariants}
                 initial="normal"
                 layoutId={videoData[1].id + unqKey}
-                transition={{ type: "tween", duration: 0.1 }}
+                transition={{ type: 'tween', duration: 0.1 }}
                 bgPhoto={makeImageHelper(
-                  videoData ? videoData[1]?.backdrop_path : "",
-                  "w500"
+                  videoData ? videoData[1]?.backdrop_path : '',
+                  'w500'
                 )}
-              ></Box>
+              />
             )}
           </Row>
           (
@@ -385,11 +382,11 @@ function NowMovies({
             initial="btnNormal"
             animate="btnNormal"
             exit="btnNormal"
-            transition={{ type: "tween", duration: 0.2 }}
+            transition={{ type: 'tween', duration: 0.2 }}
             whileHover="btnHover"
             onClick={increaseIndex}
           >
-            <motion.i key="rightI" className="fas fa-chevron-right"></motion.i>
+            <motion.i key="rightI" className="fas fa-chevron-right" />
           </ArrowBtn>
           )
         </AnimatePresence>
@@ -397,13 +394,13 @@ function NowMovies({
       {(locationMovie.params.movieId
         ? locationMovie.params.movieId?.length >= 1
         : false || bigMovieMatch) &&
-        isWhat === "movie" && (
+        isWhat === CATEGORY_MOVIE && (
           <ClickMovie
-            key={"xvcmds"}
+            key="xvcmds"
             bigVideoMatch={bigMovieMatch ? bigMovieMatch : locationMovie}
             videoData={videoData}
             search={search}
-            isWhat="movie"
+            isWhat={CATEGORY_MOVIE}
             keyword={keyword ? keyword : undefined}
             unqKey={unqKey}
           />
@@ -411,13 +408,13 @@ function NowMovies({
       {(locationTv.params.tvId
         ? locationTv.params.tvId?.length >= 1
         : false || bigTvMatch) &&
-        isWhat === "tv" && (
+        isWhat === CATEGORY_TV && (
           <ClickMovie
-            key={"xvcmdsss"}
+            key="xvcmdsss"
             bigVideoMatch={bigTvMatch ? bigTvMatch : locationTv}
             videoData={videoData}
             search={search}
-            isWhat="tv"
+            isWhat={CATEGORY_TV}
             keyword={keyword ? keyword : undefined}
             unqKey={unqKey}
           />
