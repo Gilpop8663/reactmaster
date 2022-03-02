@@ -1,35 +1,82 @@
-# 사이트를 만들면서 배우게 된 것
+## 배포 주소
 
-Framer Motion
-typescript
-styled-components
-react-query
-react-router-dom
-react-helmet
+## <a href="https://gilpop8663.github.io/reactmaster/">배포 사이트</a>
 
-## NomFlix
+## 회고록
 
-이 프로젝트에서는 Framer Motion 을 이용하여 아름다운 애니메이션과 슬라이더. 모달과 같은 인터랙션을 구현하는 방법을 배우게 됩니다.
-또한 Api 를 useQuery를 이용해 Asynchronous (비동기식) 통신을 사용하였고 useLocation,usehistory 등으로 사용자가 어떻게 접근하는지에 따라서 데이터를 다르게 보여주었습니다.
+## <a href="https://hell-of-company-builder.tistory.com/237">블로그 회고록</a>
 
-## 만들면서 어려웠던 점
+## 💻 설치 방법
 
-https://hell-of-company-builder.tistory.com/237 - React,노마드코더 강의// 영화 사이트 만들면서 어려웠던 부분들 5가지
+    yarn install or npm install
 
-1.데이터 페이지 1,2,3 합쳐서 보여주기
-2.tsx 반복 사용 3.검색 query string 사용
-4.youtube api 사용 5.리액트 컴포넌트 데이터 방식에 따라 prop을 설정하여 재사용하기
+    npm start
 
-## 만들어 본 후기
+## 📂 파일 구조
 
-재사용할 수 있는 컴포넌트를 생각해보는 기회가 되었고 , query string에 대해 알게 되었습니다. 그리고 호출한 Api 데이터를 어떻게 다뤄야 할지와 두 개의 비슷하지만 다른 데이터를 typescript에서 오류를 일으키지 않고 interface 를 사용하는 방법 등을 배우게 되었습니다. 사이트를 만들면서 실력이 크게 늘은 것 같습니다.
+src  
+ ┣ Components  
+ ┃ ┣ BannerScreen.tsx  
+ ┃ ┣ ClickMovie.tsx  
+ ┃ ┣ Footer.tsx  
+ ┃ ┣ Header.tsx  
+ ┃ ┗ NowMovies.tsx  
+ ┣ Routes  
+ ┃ ┣ Home.tsx  
+ ┃ ┣ Search.tsx  
+ ┃ ┗ Tv.tsx  
+ ┣ api  
+ ┃ ┗ api.ts  
+ ┣ constant  
+ ┃ ┗ constants.ts  
+ ┣ styles  
+ ┃ ┣ globalStyle.ts  
+ ┃ ┣ styled.d.ts  
+ ┃ ┗ theme.ts  
+ ┣ utils  
+ ┃ ┗ utils.ts  
+ ┣ App.tsx  
+ ┣ index.tsx  
+ ┗ react-app-env.d.ts
 
-## 스크린샷
+---
 
-<img src="https://user-images.githubusercontent.com/80146176/147284354-96f4cb18-ce6e-4e52-b978-a59f13363754.png" width="auto" />
-<img src="https://user-images.githubusercontent.com/80146176/147284208-e826fa46-c54c-42ea-87fc-cae8764efa80.png" width="auto" />
-<img src="https://user-images.githubusercontent.com/80146176/147284258-ab5a6565-90e1-4d31-91d7-0fb17e411c79.png" width="auto" />
+## 📋프로젝트 사진
 
-## 배포 사이트
+## 메인 화면
 
-https://gilpop8663.github.io/reactmaster/
+<img src="https://user-images.githubusercontent.com/80146176/147284354-96f4cb18-ce6e-4e52-b978-a59f13363754.png" alt="메인"/>
+
+---
+
+## 상세 정보 화면
+
+<img src="https://user-images.githubusercontent.com/80146176/147284208-e826fa46-c54c-42ea-87fc-cae8764efa80.png" alt="상세 정보 1"/>
+<img src="https://user-images.githubusercontent.com/80146176/156327396-de128102-8a32-4ea3-a0f6-6249e7e1744b.png" alt="상세 정보 2"/>
+
+---
+
+## 검색 화면
+
+<img src="https://user-images.githubusercontent.com/80146176/147284258-ab5a6565-90e1-4d31-91d7-0fb17e411c79.png" alt="검색"/>
+
+---
+
+## 📝 기능
+
+### Framer Motion을 이용한 애니메이션 구현
+
+- Framer Motion 라이브러리를 사용하여 슬라이더 , 모달 창 , 로고 등에 부드러운 애니메이션을 구현했습니다.
+
+### React-Query를 사용하여 API 통신 기능 구현
+
+- React-Query를 사용하여 22개의 API 키를 통신하여 데이터를 얻었습니다.
+- 검색 시 사용자의 검색 키워드를 매개변수로 받아서 API 키에 입력했습니다.
+
+### React-router-dom을 활용하여 한번 받은 API 값을 디테일 페이지로 전달
+
+- React-router-dom의 useLocation , useMatch 등을 이용해서 URL이 변할 때 기존의 api 값의 데이터를 보내 사용자가 기존의 데이터로 먼저 화면을 볼 수 있게 하였고 그동안 상세정보 API를 통신하여 화면에 표시하였습니다.
+
+### 다른 상황에서 비슷한 디자인을 가진 컴포넌트를 재사용 컴포넌트로 만들어서 사용
+
+- 영화 혹은 TV 에서 상세 정보 화면에서 비슷한 영화나 TV를 추천해주는 기능이 있습니다. 비슷한 영화를 누르면 똑같은 레이아웃으로 사용자에 화면에 표시해주도록 하였습니다.
